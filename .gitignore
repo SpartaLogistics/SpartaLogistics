@@ -36,6 +36,7 @@ out/
 !**/src/test/**/out/
 .idea/misc.xml
 .idea/gradle.xml
+.idea/
 
 ### NetBeans ###
 /nbproject/private/
