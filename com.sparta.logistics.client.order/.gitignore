@@ -16,6 +16,8 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+.idea/misc.xml
+.idea/gradle.xml
 
 ### IntelliJ IDEA ###
 .idea
