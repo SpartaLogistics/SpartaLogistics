@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/com.sparta.logistics.client.ai" />
         <option name="gradleHome" value="/opt/homebrew/Cellar/gradle/8.9/libexec" />
+        <option name="gradleJvm" value="corretto-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/com.sparta.logistics.client.ai" />
@@ -16,6 +18,7 @@
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/com.sparta.logistics.client.auth" />
         <option name="gradleHome" value="/opt/homebrew/Cellar/gradle/8.9/libexec" />
+        <option name="gradleJvm" value="corretto-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/com.sparta.logistics.client.auth" />
@@ -26,6 +29,7 @@
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/com.sparta.logistics.client.gateway" />
         <option name="gradleHome" value="/opt/homebrew/Cellar/gradle/8.9/libexec" />
+        <option name="gradleJvm" value="corretto-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/com.sparta.logistics.client.gateway" />
@@ -36,6 +40,7 @@
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/com.sparta.logistics.client.hub" />
         <option name="gradleHome" value="/opt/homebrew/Cellar/gradle/8.9/libexec" />
+        <option name="gradleJvm" value="corretto-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/com.sparta.logistics.client.hub" />
@@ -46,6 +51,7 @@
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/com.sparta.logistics.client.order" />
         <option name="gradleHome" value="/opt/homebrew/Cellar/gradle/8.9/libexec" />
+        <option name="gradleJvm" value="corretto-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/com.sparta.logistics.client.order" />
@@ -56,6 +62,7 @@
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/com.sparta.logistics.client.user" />
         <option name="gradleHome" value="/opt/homebrew/Cellar/gradle/8.9/libexec" />
+        <option name="gradleJvm" value="corretto-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/com.sparta.logistics.client.user" />
@@ -66,6 +73,7 @@
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/com.sparta.logistics.eureka.server" />
         <option name="gradleHome" value="/opt/homebrew/Cellar/gradle/8.9/libexec" />
+        <option name="gradleJvm" value="corretto-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/com.sparta.logistics.eureka.server" />
