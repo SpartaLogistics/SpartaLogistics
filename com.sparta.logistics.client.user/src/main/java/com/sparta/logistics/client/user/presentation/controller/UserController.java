@@ -1,0 +1,14 @@
+package com.sparta.logistics.client.user.presentation.controller;
+
+import com.sparta.logistics.client.user.application.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/users")
+@RequiredArgsConstructor
+public class UserController {
+    private final UserService userService;
+
+}
