@@ -12,7 +12,6 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: spartaLogistics
 
-
   redis-stack:
     image: redis/redis-stack
     container_name: redis-stack-compose

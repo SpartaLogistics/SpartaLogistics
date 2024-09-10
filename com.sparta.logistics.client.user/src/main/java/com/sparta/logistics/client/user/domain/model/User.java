@@ -8,7 +8,7 @@ import lombok.ToString;
 
 import java.math.BigInteger;
 
-@Entity(name = "p_user")
+@Entity(name = "p_users")
 @Getter
 @NoArgsConstructor
 @ToString
@@ -16,7 +16,7 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id",nullable = false)
-    private BigInteger id;
+    private Long id;
 
     @Column(nullable = false)
     private String username;

@@ -42,7 +42,7 @@ public class JWTUtil {
      * @param userId 사용자 ID
      * @return 생성된 JWT 액세스 토큰
      */
-    public String createAccessToken(BigInteger userId, String username, HttpServletResponse response) {
+    public String createAccessToken(Long userId, String username, HttpServletResponse response) {
         String token = Jwts.builder()
                 .claim("user_id", userId)
                 .claim("username", username)

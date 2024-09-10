@@ -1,4 +1,16 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/users
+    driver-class-name: org.postgresql.Driver
+    username: user_service
+    password: user
+    hikari:
+      maximum-pool-size: 4
+
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
   application:
     name: auth-service
 

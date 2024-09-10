@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode
 public class UserVO implements Serializable {
-    private final BigInteger id;
+    private final Long id;
     private final String username;
     private final String password;
     private final String email;
