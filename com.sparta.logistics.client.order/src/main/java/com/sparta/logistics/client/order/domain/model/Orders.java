@@ -1,7 +1,9 @@
 package com.sparta.logistics.client.order.domain.model;
 
-import com.sparta.logistics.client.order.common.Timestamped;
+
 import com.sparta.logistics.client.order.common.type.OrderStatus;
+
+import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

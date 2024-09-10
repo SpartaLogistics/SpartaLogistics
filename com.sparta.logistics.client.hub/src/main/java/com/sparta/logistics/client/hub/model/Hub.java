@@ -1,6 +1,6 @@
 package com.sparta.logistics.client.hub.model;
 
-import com.sparta.logistics.client.hub.common.Timestamped;
+import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,4 +45,7 @@ public class Hub extends Timestamped {
 
     @OneToMany(mappedBy = "nextHubId")
     private List<HubPath> nextHubPaths = new ArrayList<>();
+
+
 }
+
