@@ -1,4 +1,16 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hubs
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    hikari:
+      maximum-pool-size: 4
+
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
   application:
     name: hub-service
 
@@ -9,3 +21,5 @@ eureka:
 
 server:
   port: 19095
+
+
