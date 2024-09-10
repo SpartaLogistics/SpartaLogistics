@@ -28,6 +28,9 @@ ext {
 }
 
 dependencies {
+	// common
+	implementation project(":com.sparta.logistics.common")
+
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -48,3 +51,5 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register("prepareKotlinBuildScriptModel"){}
