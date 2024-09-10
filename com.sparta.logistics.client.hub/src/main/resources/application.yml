@@ -2,8 +2,8 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/hubs
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres
+    username: hub_service
+    password: hub
     hikari:
       maximum-pool-size: 4
 
@@ -11,6 +11,7 @@ spring:
     database: postgresql
     hibernate:
       ddl-auto: update
+    show-sql: true
   application:
     name: hub-service
 
