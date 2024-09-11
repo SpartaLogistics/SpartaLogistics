@@ -37,3 +37,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/  # Eureka 서버의 URL을 지정
+
+service:
+  jwt:
+    secret-key: "3d9d5abb6494559eab91a0fd6b0bcd64806d1718de3e06bfcde2f0cfa98673efb893fad45f21ce98e43ced1106b0bca7a6b9f6054e84d54d4613240d8b8f90ae"
