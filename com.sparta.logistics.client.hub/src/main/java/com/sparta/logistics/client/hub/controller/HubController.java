@@ -11,6 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,11 +30,10 @@ public class HubController {
     }
 
     // 허브 목록 조회 API
-    // TODO : 모든 조회 및 검색에서 is_delete가 false인 데이터만을 대상으로 처리
     @GetMapping
-    public ResponseEntity<Page<HubResponseDto>> getAllHubs(
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(hubService.getAllHubs(pageable));
+    public ResponseEntity<List<HubResponseDto>> getAllHubs() {
+        List<HubResponseDto> hubs = hubService.getAllHubs();
+        return ResponseEntity.ok(hubs);
     }
 
 

@@ -11,11 +11,13 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -37,14 +39,15 @@ public class HubService {
         return HubResponseDto.of(hubRepository.save(hub));
     }
 
-    @Cacheable(cacheNames = "hubAllCache", key = "#pageable")
-    public Page<HubResponseDto> getAllHubs(Pageable pageable) {
-        return hubRepository.findAll(pageable).map(HubResponseDto::of);
+    @Cacheable(cacheNames = "hubAllCache", key = "getMethodName()")
+    public List<HubResponseDto> getAllHubs() {
+        List<Hub> hubs = hubRepository.findAllByIsDeletedFalse();
+        return hubs.stream().map(HubResponseDto::of).toList();
     }
 
     @Cacheable(cacheNames = "hubCache", key = "#hubId")
     public HubResponseDto getHubById(UUID hubId) {
-        Hub hub = hubRepository.findById(hubId)
+        Hub hub = hubRepository.findByHubId(hubId)
                 .orElseThrow(() -> new EntityNotFoundException("허브를 찾을 수 없습니다. ID: " + hubId));
         return HubResponseDto.of(hub);
     }
@@ -54,7 +57,7 @@ public class HubService {
     @CacheEvict(cacheNames = "hubAllCache", allEntries = true)
     @Transactional
     public HubResponseDto updateHub(UUID hubID, HubRequestDto requestDto) {
-        Hub hub = hubRepository.findById(hubID)
+        Hub hub = hubRepository.findByHubId(hubID)
                 .orElseThrow(() -> new EntityNotFoundException("허브를 찾을 수 없습니다."));
 
         hub.update(requestDto);
@@ -64,14 +67,13 @@ public class HubService {
     @Transactional
     @CacheEvict(cacheNames = {"hubAllCache", "hubCache"}, key = "#hubId")
     public void deleteHub(UUID hubId) {
-        Hub hub = hubRepository.findById(hubId)
+        Hub hub = hubRepository.findByHubId(hubId)
                 .orElseThrow(() -> new EntityNotFoundException("허브를 찾을 수 없습니다. ID: " + hubId));
         hub.softDelete();
         hubRepository.save(hub);
     }
 
-    //TODO : is_deleted false인것만 조회
     public Hub findHubById(UUID hubId) {
-        return hubRepository.findById(hubId).orElseThrow(NoSuchElementException::new);
+        return hubRepository.findByHubId(hubId).orElseThrow(NoSuchElementException::new);
     }
 }

@@ -29,7 +29,7 @@ public class HubResponseDto {
                 .address(hub.getAddress())
                 .latitude(hub.getLatitude())
                 .longitude(hub.getLongitude())
-                .is_deleted(hub.getIs_deleted())
+                .is_deleted(hub.getIsDeleted())
                 .build();
     }
 }

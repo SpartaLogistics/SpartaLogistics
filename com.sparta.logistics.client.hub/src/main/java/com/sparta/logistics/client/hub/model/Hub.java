@@ -1,9 +1,11 @@
 package com.sparta.logistics.client.hub.model;
 
-import com.sparta.logistics.client.hub.common.Timestamped;
 import com.sparta.logistics.client.hub.dto.HubRequestDto;
+import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.SoftDelete;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,7 +19,6 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "p_hubs")
 public class Hub extends Timestamped {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "hub_id")
@@ -36,7 +37,7 @@ public class Hub extends Timestamped {
     private BigDecimal longitude;
 
     @Column(nullable = false)
-    private Boolean is_deleted = false;
+    private Boolean isDeleted = false;
 
     @OneToMany(mappedBy = "departureId")
     private List<HubPath> departurePaths = new ArrayList<>();
@@ -49,7 +50,7 @@ public class Hub extends Timestamped {
 
     // 소프트 삭제 메서드
     public void softDelete() {
-        this.is_deleted = true;
+        this.isDeleted = true;
     }
 
 
