@@ -1,5 +1,7 @@
-package com.sparta.logistics.client.user.domain.model;
+package com.sparta.logistics.client.user.model;
 
+import com.sparta.logistics.client.user.common.BaseEntity;
+import com.sparta.logistics.client.user.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

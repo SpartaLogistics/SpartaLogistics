@@ -1,6 +1,6 @@
-package com.sparta.logistics.client.user.presentation.request;
+package com.sparta.logistics.client.user.dto;
 
-import com.sparta.logistics.client.user.domain.model.RoleType;
+import com.sparta.logistics.client.user.enums.RoleType;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
