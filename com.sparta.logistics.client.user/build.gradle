@@ -28,7 +28,13 @@ ext {
 }
 
 dependencies {
+
+
+	// common
+	implementation project(":com.sparta.logistics.common")
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
@@ -50,3 +56,4 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+tasks.register("prepareKotlinBuildScriptModel"){}

@@ -28,7 +28,13 @@ ext {
 }
 
 dependencies {
+
 	implementation 'io.jsonwebtoken:jjwt:0.12.6'
+
+	// common
+	implementation project(":com.sparta.logistics.common")
+
+
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -50,3 +56,5 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register("prepareKotlinBuildScriptModel"){}
