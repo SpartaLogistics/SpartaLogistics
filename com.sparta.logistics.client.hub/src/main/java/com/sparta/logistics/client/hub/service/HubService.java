@@ -76,4 +76,9 @@ public class HubService {
     public Hub findHubById(UUID hubId) {
         return hubRepository.findByHubId(hubId).orElseThrow(NoSuchElementException::new);
     }
+
+    // 허브 존재 확인 메서드
+    public boolean existsHubById(UUID hubId) {
+        return hubRepository.existsById(hubId);
+    }
 }

@@ -1,6 +1,7 @@
 package com.sparta.logistics.client.hub.model;
 
 import com.sparta.logistics.client.hub.common.Timestamped;
+import com.sparta.logistics.client.hub.dto.CompanyRequestDto;
 import com.sparta.logistics.client.hub.enums.CompanyType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,17 +32,44 @@ public class Company extends Timestamped {
     @Column(nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private CompanyType type;
-
     @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false)
-    private Boolean is_deleted = false;
+    private Boolean isDeleted = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CompanyType companyType;
+
+    // 소프트 삭제 메서드
+    public void softDelete(){
+        this.isDeleted = true;
+    }
+
+    // 회사 생성용 빌더 클래스
+    @Builder(builderClassName = "CreateCompanyInfoBuilder", builderMethodName = "createCompanyInfoBuilder")
+    public Company(CompanyRequestDto companyRequestDto, Hub managingHubId) {
+        this.managingHubId = managingHubId;
+        this.name = companyRequestDto.getName();
+        this.companyType = companyRequestDto.getCompanyType();
+        this.address = companyRequestDto.getAddress();
+    }
+
+    // 회사 수정용 메서드
+    public void update(CompanyRequestDto companyRequestDto, Hub managingHubId) {
+        if (managingHubId != null) {
+            this.managingHubId = managingHubId;
+        }
+        if (companyRequestDto.getName() != null) {
+            this.name = companyRequestDto.getName();
+        }
+        if (companyRequestDto.getCompanyType() != null) {
+            this.companyType = companyRequestDto.getCompanyType();
+        }
+        if (companyRequestDto.getAddress() != null) {
+            this.address = companyRequestDto.getAddress();
+        }
+    }
+
+
 }
