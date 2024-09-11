@@ -1,12 +1,10 @@
 package com.sparta.logistics.client.user.domain.model;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.math.BigInteger;
 
 @Entity(name = "p_users")
 @Getter
@@ -15,7 +13,7 @@ import java.math.BigInteger;
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id",nullable = false)
+    @Column(name = "user_id")
     private Long id;
 
     @Column(nullable = false)
@@ -48,8 +46,8 @@ public class User extends BaseEntity {
     public UserVO toUserVO() {
         return new UserVO(
                 id, username, password,
-                email, slack_id, role,
-                getCreatedAt(), getUpdatedAt(), getDeletedAt(),
+                email, slack_id, role
+                , getCreatedAt(), getUpdatedAt(), getDeletedAt(),
                 getCreatedBy(), getUpdatedBy(), getDeletedBy(), isDeleted()
         );
     }

@@ -1,5 +1,6 @@
 package com.sparta.logistics.client.auth.application.util;
 
+import com.sparta.logistics.client.auth.domain.model.RoleType;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -42,10 +43,11 @@ public class JWTUtil {
      * @param userId 사용자 ID
      * @return 생성된 JWT 액세스 토큰
      */
-    public String createAccessToken(Long userId, String username, HttpServletResponse response) {
+    public String createAccessToken(Long userId, String username, RoleType role, HttpServletResponse response) {
         String token = Jwts.builder()
                 .claim("user_id", userId)
                 .claim("username", username)
+                .claim("role", role)
                 .issuer(issuer)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + TOKEN_TIME))

@@ -24,9 +24,9 @@ public class UserVO implements Serializable {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private final LocalDateTime deletedAt;
-    private final Integer createdBy;
-    private final Integer updatedBy;
-    private final Integer deletedBy;
+    private final Long createdBy;
+    private final Long updatedBy;
+    private final Long deletedBy;
 
     private boolean isDeleted;
 

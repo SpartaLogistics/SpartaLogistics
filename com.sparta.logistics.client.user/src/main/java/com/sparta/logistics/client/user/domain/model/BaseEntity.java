@@ -12,8 +12,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
-
 
 @Getter
 @MappedSuperclass
@@ -38,22 +36,22 @@ public class BaseEntity {
 
     @CreatedBy
     @Column(updatable = false)
-    private Integer createdBy;
+    private Long createdBy;
 
     @LastModifiedBy
-    private Integer updatedBy;
+    private Long updatedBy;
 
-    private Integer deletedBy;
+    private Long deletedBy;
 
     private boolean isDeleted = false;
 
-    public void delete(Integer handlerId) {
+    public void delete(Long handlerId) {
         this.deletedBy = handlerId;
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void undoDelete(Integer handlerId) {
+    public void undoDelete(Long handlerId) {
         this.deletedBy = null;
         this.deletedAt = null;
         this.isDeleted = false;

@@ -6,7 +6,8 @@ spring:
     password: user
     hikari:
       maximum-pool-size: 4
-
+  main:
+    allow-bean-definition-overriding: true
   jpa:
     database: postgresql
     hibernate:

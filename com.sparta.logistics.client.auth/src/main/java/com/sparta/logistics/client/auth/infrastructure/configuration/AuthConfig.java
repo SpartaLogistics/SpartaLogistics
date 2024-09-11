@@ -13,7 +13,6 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableFeignClients(basePackages = "com.sparta.logistics.client.auth.infrastructure.feign")
 public class AuthConfig {
 
     // SecurityFilterChain 빈을 정의합니다. 이 메서드는 Spring Security의 보안 필터 체인을 구성합니다.
@@ -27,6 +26,8 @@ public class AuthConfig {
                         // /auth/signIn 경로에 대한 접근을 허용합니다. 이 경로는 인증 없이 접근할 수 있습니다.
                         .requestMatchers("/auth/signin").permitAll()
                         .requestMatchers("/auth/signup").permitAll()
+                                .requestMatchers("/users/").permitAll()
+//                        .requestMatchers("/users").permitAll()
                         // 그 외의 모든 요청은 인증이 필요합니다.
                         .anyRequest().authenticated()
                 )
