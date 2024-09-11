@@ -25,14 +25,6 @@ public class AuthController {
 
     private final AuthService authService;
     private final JWTUtil jwtUtil;
-//    @PostMapping("/auth/signup")
-//    public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
-//        // AuthService에서 회원가입 로직 처리
-//        String userId = authService.signUp(signUpRequest);
-//
-//        // 성공적으로 처리되면 생성된 userId를 반환
-//        return ResponseEntity.ok("User registered successfully with ID: " + userId);
-//    }
 
     @PostMapping("/auth/signup")
     public ResponseEntity<String> signUp(
