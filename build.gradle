@@ -39,7 +39,6 @@ subprojects {
     }
 }
 
-
 // 루트 프로젝트에서 bootJar 비활성화
 tasks.named('bootJar') {
     enabled = false

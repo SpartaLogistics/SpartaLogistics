@@ -1,4 +1,4 @@
-package com.sparta.logistics.client.order.domain.model;
+package com.sparta.logistics.client.order.model;
 
 import com.sparta.logistics.client.order.common.type.DeliveryStatus;
 import jakarta.persistence.*;
@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.bind.annotation.BindParam;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +19,7 @@ import java.util.UUID;
 public class Delivery {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "delivery_id", columnDefinition = "UUID")
     private UUID deliveryId;
 
@@ -48,6 +48,6 @@ public class Delivery {
     private Boolean isDeleted = false;
 
     @OneToMany(mappedBy = "delivery")
-    private List<DeliveryPaths> deliveryPathsList;
+    private List<DeliveryPath> deliveryPathsList;
 }
 

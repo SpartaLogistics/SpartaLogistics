@@ -1,6 +1,7 @@
-package com.sparta.logistics.client.order.domain.model;
+package com.sparta.logistics.client.order.model;
 
-import com.sparta.logistics.client.order.common.Timestamped;
+
+import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,9 +16,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderProducts extends Timestamped {
+public class OrderProduct extends Timestamped {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_product_id", columnDefinition = "UUID")
     private UUID orderProductId;
 
@@ -35,5 +37,5 @@ public class OrderProducts extends Timestamped {
 
     @ManyToOne
     @JoinColumn(name = "order_id", insertable = false, updatable = false)
-    private Orders order;
+    private Order order;
 }

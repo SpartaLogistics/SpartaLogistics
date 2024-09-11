@@ -23,8 +23,10 @@ public enum ApiResultError {
     ERROR_AI_API_NO_PRODUCT     ("3001", "해당 상품이 존재하지 않습니다."),
     ERROR_AI_API_EXCEED_LENGTH  ("3002", "답변 글자수가 너무 많습니다."),
 
-    PRODUCT_NO_STORE_ERROR      ("4603", "음식점 정보가 없습니다."),
-    STORE_NO_OWNER_ERROR        ("5603", "음식점 OWNER 정보가 없습니다."),
+
+    ORDER_NO_EXIST              ("4000", "주문이 존재하지 않습니다"),
+
+
     ERROR_INVALID_LOGIN			("9101" , "로그인정보가 유효하지 않습니다."),
 
     ERROR_TOKEN_EXPIRED			("9200" , "만료된 토큰입니다. 다시 로그인해 주세요."),

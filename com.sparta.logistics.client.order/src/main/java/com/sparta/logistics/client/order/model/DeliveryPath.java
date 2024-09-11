@@ -1,8 +1,8 @@
-package com.sparta.logistics.client.order.domain.model;
+package com.sparta.logistics.client.order.model;
 
 
-import com.sparta.logistics.client.order.common.Timestamped;
 import com.sparta.logistics.client.order.common.type.DeliveryStatus;
+import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryPaths extends Timestamped {
+public class DeliveryPath extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
