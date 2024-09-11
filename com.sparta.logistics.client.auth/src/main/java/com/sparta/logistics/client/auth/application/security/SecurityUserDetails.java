@@ -35,7 +35,7 @@ public class SecurityUserDetails implements UserDetails {
         return authorities;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return securityUserInfo.getId();
     }
 
