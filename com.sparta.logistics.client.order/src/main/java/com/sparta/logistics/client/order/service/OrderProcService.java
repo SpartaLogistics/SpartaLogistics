@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class OrderProcService {
 
+    private final OrderService orderService;
+    private final OrderProductService orderProductService;
+
     /**
      * TODO 주문 생성
      */
@@ -29,4 +32,14 @@ public class OrderProcService {
 
         return null;
     }
+
+    // 주문 수정
+    // -> 주문상품 수정 시 기존 상품 delete 처리 후 새로 저장
+    // -> 배달 수정 시 기존 경로 delete 처리 후 새로 저장
+
+    // 주문 삭제
+    // 주문 상품 삭제 -> product 수량 원복
+    // 배달 삭제
+    // 배달 경로 삭제
+
 }
