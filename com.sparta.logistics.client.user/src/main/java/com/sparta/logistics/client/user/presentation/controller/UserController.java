@@ -19,7 +19,7 @@ public class UserController {
         return ResponseEntity.ok(userVO);
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/auth/{username}")
     public ResponseEntity<UserVO> findByUsername(@PathVariable String username) {
         UserVO user = userService.findByUsername(username);
         if (user != null) {
@@ -28,4 +28,15 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserVO> getUserInfo(@PathVariable Long userId) {
+        UserVO user = userService.getUserInfo(userId);
+        return ResponseEntity.ok(user);
+    }
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.ok("User deleted successfully.");
+    }
+
 }
