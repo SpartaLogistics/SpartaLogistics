@@ -4,8 +4,6 @@ import com.sparta.logistics.client.hub.dto.HubRequestDto;
 import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.SoftDelete;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
