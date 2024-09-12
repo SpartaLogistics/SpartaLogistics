@@ -1,5 +1,6 @@
 package com.sparta.logistics.client.order.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.UUID;

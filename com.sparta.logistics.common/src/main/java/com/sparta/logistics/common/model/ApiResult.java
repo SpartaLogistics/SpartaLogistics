@@ -153,6 +153,7 @@ public class ApiResult extends HashMap<String, Object>{
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     public ApiResult setSc(Object searchCondition) {
         Map<String, Object> map = new HashMap<String, Object>();
         if(super.get(AR_KEY_RESULT_DATA) != null) {

@@ -1,6 +1,8 @@
 package com.sparta.logistics.client.order.model;
 
 import com.sparta.logistics.client.order.common.type.DeliveryStatus;
+import com.sparta.logistics.client.order.dto.DeliveryRequestDto;
+import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +18,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Delivery {
+public class Delivery extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,5 +51,21 @@ public class Delivery {
 
     @OneToMany(mappedBy = "delivery")
     private List<DeliveryPath> deliveryPathsList;
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
+
+    @Builder(builderClassName = "DeliveryCreateBuilder", builderMethodName = "DeliveryCreateBuilder")
+    public Delivery(DeliveryRequestDto deliveryRequestDto) {
+        this.orderId = deliveryRequestDto.getOrderId();
+        this.departureId = deliveryRequestDto.getDepartureId();
+        this.arrivalId = deliveryRequestDto.getArrivalId();
+        this.receiver = deliveryRequestDto.getReceiver();
+        this.slackId = deliveryRequestDto.getSlackId();
+        this.isDeleted = false;
+        this.status = DeliveryStatus.HUB_WAITING;
+        this.address = deliveryRequestDto.getAddress();
+    }
 }
 
