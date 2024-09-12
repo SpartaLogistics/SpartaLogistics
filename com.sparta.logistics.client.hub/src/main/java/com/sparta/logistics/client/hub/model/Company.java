@@ -27,7 +27,7 @@ public class Company extends Timestamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "managing_hub_id", nullable = false)
-    private Hub managingHubId;
+    private Hub managingHub;
 
     @Column(nullable = false)
     private String name;
@@ -41,24 +41,24 @@ public class Company extends Timestamped {
     @Column(nullable = false)
     private CompanyType companyType;
 
-    // 소프트 삭제 메서드
-    public void softDelete(){
-        this.isDeleted = true;
-    }
-
     // 회사 생성용 빌더 클래스
     @Builder(builderClassName = "CreateCompanyInfoBuilder", builderMethodName = "createCompanyInfoBuilder")
     public Company(CompanyRequestDto companyRequestDto, Hub managingHubId) {
-        this.managingHubId = managingHubId;
+        this.managingHub = managingHubId;
         this.name = companyRequestDto.getName();
         this.companyType = companyRequestDto.getCompanyType();
         this.address = companyRequestDto.getAddress();
     }
 
+    // 소프트 삭제 메서드
+    public void softDelete() {
+        this.isDeleted = true;
+    }
+
     // 회사 수정용 메서드
     public void update(CompanyRequestDto companyRequestDto, Hub managingHubId) {
         if (managingHubId != null) {
-            this.managingHubId = managingHubId;
+            this.managingHub = managingHubId;
         }
         if (companyRequestDto.getName() != null) {
             this.name = companyRequestDto.getName();
@@ -69,6 +69,11 @@ public class Company extends Timestamped {
         if (companyRequestDto.getAddress() != null) {
             this.address = companyRequestDto.getAddress();
         }
+    }
+
+    // Hub 엔티티의 ID를 반환하는 메서드
+    public UUID getManagingHubId() {
+        return managingHub != null ? managingHub.getHubId() : null;
     }
 
 

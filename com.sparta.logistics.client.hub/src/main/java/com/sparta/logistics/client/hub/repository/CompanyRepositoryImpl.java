@@ -35,7 +35,7 @@ public class CompanyRepositoryImpl extends QuerydslRepositorySupport implements 
         }
 
         if (managingHubId != null) {
-            builder.and(company.managingHubId.hubId.eq(managingHubId));
+            builder.and(company.managingHub.hubId.eq(managingHubId));
         }
 
         return from(company)

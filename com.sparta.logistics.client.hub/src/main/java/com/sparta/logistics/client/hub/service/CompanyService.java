@@ -98,5 +98,11 @@ public class CompanyService {
         return null;
     }
 
+    // Company 존재 확인
+    public Company findCompanyById(UUID companyId) throws HubException {
+        return companyRepository.findByCompanyId(companyId)
+                .orElseThrow(() -> new HubException(ApiResultError.COMPANY_NO_EXIST));
+    }
+
 
 }
