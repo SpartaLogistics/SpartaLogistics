@@ -3,6 +3,7 @@ package com.sparta.logistics.client.hub.service;
 import com.sparta.logistics.client.hub.common.exception.HubException;
 import com.sparta.logistics.client.hub.dto.CompanyRequestDto;
 import com.sparta.logistics.client.hub.dto.CompanyResponseDto;
+import com.sparta.logistics.client.hub.enums.CompanyType;
 import com.sparta.logistics.client.hub.model.Company;
 import com.sparta.logistics.client.hub.model.Hub;
 import com.sparta.logistics.client.hub.repository.CompanyRepository;
@@ -83,8 +84,17 @@ public class CompanyService {
         return null;
     }
 
-//    public List<CompanyResponseDto> searchCompanies(String name, CompanyType companyType, String address, UUID managingHubId) {
-//        List<Company> companies = companyRepository.searchCompanies(name, companyType, address, managingHubId);
-//        return companies.stream().map(CompanyResponseDto::of).collect(Collectors.toList());
-//    }
+    public List<CompanyResponseDto> searchCompanies(String name, CompanyType companyType, String address, UUID managingHubId) throws HubException {
+        // 관리 허브 ID 유효성 검사
+        validateManagingHubId(managingHubId);
+
+        List<Company> companies = companyRepository.searchCompanies(name, companyType, address, managingHubId);
+
+        // 검색 결과가 없을 경우
+        if (companies.isEmpty()) {
+            throw new HubException(ApiResultError.COMPANY_SEARCH_NO_RESULT);
+        }
+
+        return companies.stream().map(CompanyResponseDto::of).collect(Collectors.toList());
+    }
 }
