@@ -4,10 +4,14 @@ import com.sparta.logistics.client.hub.common.exception.HubException;
 import com.sparta.logistics.client.hub.dto.CompanyRequestDto;
 import com.sparta.logistics.client.hub.dto.CompanyResponseDto;
 import com.sparta.logistics.client.hub.enums.CompanyType;
+import com.sparta.logistics.client.hub.model.validation.CompanyVaild0001;
 import com.sparta.logistics.client.hub.service.CompanyService;
+import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,15 +20,20 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/companies")
-public class CompanyController {
+public class CompanyController extends CustomApiController {
 
     // TODO : Search, 권한 관리 ,userId
 
     private final CompanyService companyService;
 
     @PostMapping
-    public ApiResult createCompany(@RequestBody CompanyRequestDto requestDto) {
+    public ApiResult createCompany(@RequestBody @Validated({CompanyVaild0001.class}) CompanyRequestDto requestDto, Errors errors
+    ) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        if (errors.hasErrors()) {
+            return bindError(errors, apiResult);
+        }
+
         try {
             CompanyResponseDto responseDto = companyService.createCompany(requestDto);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
@@ -52,7 +61,7 @@ public class CompanyController {
         try {
             List<CompanyResponseDto> responseDtoList = companyService.getAllCompanies();
             apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDtoList);
-        } catch (Exception e) {
+        } catch (HubException e) {
             apiResult.set(ApiResultError.ERROR_DEFAULT).setResultMessage(e.getMessage());
         }
         return apiResult;

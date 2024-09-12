@@ -1,14 +1,17 @@
 package com.sparta.logistics.client.hub.controller;
 
+import com.sparta.logistics.client.hub.common.exception.HubException;
 import com.sparta.logistics.client.hub.dto.HubRequestDto;
 import com.sparta.logistics.client.hub.dto.HubResponseDto;
+import com.sparta.logistics.client.hub.model.validation.HubValid0001;
+import com.sparta.logistics.client.hub.model.validation.HubValid0002;
 import com.sparta.logistics.client.hub.service.HubService;
+import com.sparta.logistics.common.controller.CustomApiController;
+import com.sparta.logistics.common.model.ApiResult;
+import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,49 +20,104 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/hubs")
 @RequiredArgsConstructor
-public class HubController {
+public class HubController extends CustomApiController {
 
     private final HubService hubService;
 
     // 허브 생성 API
     @PostMapping
-    public ResponseEntity<HubResponseDto> createHub(@RequestBody HubRequestDto requestDto) {
+    public ApiResult createHub(@RequestBody @Validated({HubValid0001.class}) HubRequestDto requestDto, Errors errors) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        if (errors.hasErrors()) {
+            return bindError(errors, apiResult);
+        }
+
         // DTO를 서비스로 전달하여 허브 생성
-        HubResponseDto responseDto = hubService.createHub(requestDto);
-        return ResponseEntity.ok(responseDto);
+        try {
+            HubResponseDto responseDto = hubService.createHub(requestDto);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
     }
 
     // 허브 목록 조회 API
     @GetMapping
-    public ResponseEntity<List<HubResponseDto>> getAllHubs() {
-        List<HubResponseDto> hubs = hubService.getAllHubs();
-        return ResponseEntity.ok(hubs);
+    public ApiResult getAllHubs() {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            List<HubResponseDto> responseDtoList = hubService.getAllHubs();
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDtoList);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
     }
 
 
     // 허브 단건 조회 API
     @GetMapping("/{hubId}")
-    public ResponseEntity<HubResponseDto> getHubById(@PathVariable UUID hubId) {
-        HubResponseDto responseDto = hubService.getHubById(hubId);
-        return ResponseEntity.ok(responseDto);
+    public ApiResult getHubById(@PathVariable UUID hubId) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            HubResponseDto responseDto = hubService.getHubById(hubId);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
     }
 
     //허브 수정 API
     @PatchMapping("/{id}")
-    public ResponseEntity<HubResponseDto> updateHub(
+    public ApiResult updateHub(
             @PathVariable("id") UUID hubID,
-            @RequestBody HubRequestDto requestDto
-    ){
-        HubResponseDto responseDto = hubService.updateHub(hubID,requestDto);
-        return ResponseEntity.ok(responseDto);
+            @RequestBody @Validated({HubValid0002.class}) HubRequestDto requestDto,
+            Errors errors
+    ) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+
+        if (errors.hasErrors()) {
+            return bindError(errors, apiResult);
+        }
+
+        try {
+            HubResponseDto responseDto = hubService.updateHub(hubID, requestDto);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
     }
 
 
     // 허브 삭제 API
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteHub(@PathVariable("id") UUID hubId) {
-        hubService.deleteHub(hubId);
-        return ResponseEntity.noContent().build();
+    public ApiResult deleteHub(@PathVariable("id") UUID hubId) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            hubService.deleteHub(hubId);
+            apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
+    }
+
+    @GetMapping("/search")
+    public ApiResult searchHubs(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String address
+    ) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            List<HubResponseDto> searchResult = hubService.searchHubs(name, address);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(searchResult);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
     }
 
 }

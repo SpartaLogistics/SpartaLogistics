@@ -45,7 +45,7 @@ public class CompanyService {
     }
 
     @Transactional(readOnly = true)
-    public List<CompanyResponseDto> getAllCompanies() {
+    public List<CompanyResponseDto> getAllCompanies() throws HubException {
         return companyRepository.findAllByIsDeletedFalse().stream()
                 .map(CompanyResponseDto::of)
                 .collect(Collectors.toList());
@@ -73,6 +73,20 @@ public class CompanyService {
         companyRepository.save(company);
     }
 
+    public List<CompanyResponseDto> searchCompanies(String name, CompanyType companyType, String address, UUID managingHubId) throws HubException {
+        // 관리 허브 ID 유효성 검사
+        validateManagingHubId(managingHubId);
+
+        List<Company> companies = companyRepository.searchCompanies(name, companyType, address, managingHubId);
+
+        // 검색 결과가 없을 경우
+        if (companies.isEmpty()) {
+            throw new HubException(ApiResultError.SEARCH_NO_RESULT);
+        }
+
+        return companies.stream().map(CompanyResponseDto::of).collect(Collectors.toList());
+    }
+
     private Hub validateManagingHubId(UUID managingHubId) throws HubException {
         if (managingHubId != null) {
             if (hubService.existsHubById(managingHubId)) {
@@ -84,17 +98,5 @@ public class CompanyService {
         return null;
     }
 
-    public List<CompanyResponseDto> searchCompanies(String name, CompanyType companyType, String address, UUID managingHubId) throws HubException {
-        // 관리 허브 ID 유효성 검사
-        validateManagingHubId(managingHubId);
 
-        List<Company> companies = companyRepository.searchCompanies(name, companyType, address, managingHubId);
-
-        // 검색 결과가 없을 경우
-        if (companies.isEmpty()) {
-            throw new HubException(ApiResultError.COMPANY_SEARCH_NO_RESULT);
-        }
-
-        return companies.stream().map(CompanyResponseDto::of).collect(Collectors.toList());
-    }
 }
