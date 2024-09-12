@@ -28,11 +28,12 @@ public enum ApiResultError {
     ORDER_PRODUCT_INSUFFICIENT("4101", "주문 상품의 재고가 부족합니다."),
 
     MANAGING_HUB_NO_EXIST("5000", "관리 허브가 존재하지 않습니다."),
+    HUB_NO_EXIST("5001", "허브가 존재하지 않습니다."),
+    HUB_SEARCH_NO_RESULT("5002", ""),
 
 
     COMPANY_NO_EXIST("6000", "업체가 존재하지 않습니다."),
-
-    COMPANY_SEARCH_NO_RESULT("6001", "검색 결과가 없습니다."),
+    INVALID_COMPANY_TYPE("6001", "유효하지 않은 업체 유형입니다."),
 
 
     ERROR_INVALID_LOGIN("9101", "로그인정보가 유효하지 않습니다."),
@@ -51,12 +52,14 @@ public enum ApiResultError {
     ERROR_INVALID_ARGUMENT("9601", "잘못된 인자가 전달되었습니다."),  // IllegalArgumentException에 대한 에러 코드
     ERROR_INVALID_STATE("9602", "객체의 상태가 유효하지 않습니다."), // IllegalStateException에 대한 에러 코드
     ERROR_EMPTY_DATA("9603", "데이터가 존재하지 않습니다"),
+    SEARCH_NO_RESULT("9604", "검색 결과가 없습니다."),
 
     ERROR_PARAMETERS("9901", "파라미터 오류."),
     ERROR_NOT_SUPPORTED_METHOD("9902", "지원하지 않는 Method 입니다."),
     ERROR_INTERNAL_API_PARAMETERS("9903", "내부 API 파라미터 오류."),
     ERROR_TIMEOUT("9904", "시간 초과"),
     ERROR_DEFAULT("9999", "오류가 발생하였습니다.");
+
 
     private String code;
     private String message;
