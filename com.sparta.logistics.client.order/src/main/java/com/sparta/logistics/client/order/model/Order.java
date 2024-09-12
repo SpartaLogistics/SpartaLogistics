@@ -71,9 +71,9 @@ public class Order extends Timestamped {
     public Order(OrderRequestDto orderDto, Order order) {
         this.senderId = orderDto.getSenderId() != null ? orderDto.getSenderId() : order.getSenderId();
         this.receiverId = orderDto.getReceiverId() != null ? orderDto.getReceiverId() : order.getReceiverId();
-        this.deliveryId = order.getDeliveryId() != null ? order.getDeliveryId() : order.getDeliveryId();
-        this.remark = order.getRemark() != null ? order.getRemark() : order.getRemark();
-        this.status = order.getStatus() != null ? order.getStatus() : order.getStatus();
+        this.deliveryId = orderDto.getDeliveryId() != null ? orderDto.getDeliveryId() : order.getDeliveryId();
+        this.remark = orderDto.getRemark() != null ? orderDto.getRemark() : order.getRemark();
+        this.status = orderDto.getStatus() != null ? orderDto.getStatus() : order.getStatus();
     }
 
 

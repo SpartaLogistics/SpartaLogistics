@@ -23,7 +23,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     // 주문 생성
-    public Order createOrder(OrderRequestDto orderRequestDto) throws OrderProcException {
+    public OrderResponseDto createOrder(OrderRequestDto orderRequestDto) throws OrderProcException {
         // TODO 데이터 검증
         // 1. 발송처 확인
         // 2. 배송처 확인
@@ -31,7 +31,7 @@ public class OrderService {
         Order order = Order.OrderCreateBuilder()
                 .orderDto(orderRequestDto)
                 .build();
-        return orderRepository.save(order);
+        return OrderResponseDto.of(orderRepository.save(order));
     }
 
     // 주문 목록 조회
@@ -41,7 +41,7 @@ public class OrderService {
     }
 
     // 주문 상세 조회
-    public Order getOrder(UUID orderId) throws OrderProcException {
+    public OrderResponseDto getOrder(UUID orderId) throws OrderProcException {
         // 주문 확인
         Order order = orderRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow( ()->
                 // 주문이 존재하지 않습니다.
@@ -49,18 +49,18 @@ public class OrderService {
         );
 
         // 관리자 외 자신의 주문만 조회 가능
-        return order;
+        return OrderResponseDto.of(order);
     }
 
     // 주문 삭제
-    public Order deleteOrder(UUID orderId) throws OrderProcException {
+    public OrderResponseDto deleteOrder(UUID orderId) throws OrderProcException {
         // 주문 확인
         Order order = orderRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow( ()->
             // 주문이 존재하지 않습니다.
             new OrderProcException(ApiResultError.ORDER_NO_EXIST)
         );
         order.softDelete();
-        return orderRepository.save(order);
+        return OrderResponseDto.of(orderRepository.save(order));
     }
 
     public OrderResponseDto updateOrder(OrderRequestDto orderRequestDto) throws OrderProcException {
@@ -75,7 +75,7 @@ public class OrderService {
                 .orderDto(orderRequestDto)
                 .order(order)
                 .build();
-        return new OrderResponseDto(orderRepository.save(updatedOrder));
+        return OrderResponseDto.of(orderRepository.save(updatedOrder));
 
 
     }

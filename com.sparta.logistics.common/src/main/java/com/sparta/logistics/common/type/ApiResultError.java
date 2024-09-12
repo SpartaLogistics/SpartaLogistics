@@ -26,6 +26,7 @@ public enum ApiResultError {
     ORDER_NO_EXIST("4000", "주문이 존재하지 않습니다."),
     ORDER_PRODUCT_NO_EXIST("4100", "주문 상품이 존재하지 않습니다."),
     ORDER_PRODUCT_INSUFFICIENT("4101", "주문 상품의 재고가 부족합니다."),
+    DELIVERY_NO_EXIST("4300","배송 정보가 존재하지 않습니다."),
 
     MANAGING_HUB_NO_EXIST("5000", "관리 허브가 존재하지 않습니다."),
     HUB_NO_EXIST("5001", "허브가 존재하지 않습니다."),

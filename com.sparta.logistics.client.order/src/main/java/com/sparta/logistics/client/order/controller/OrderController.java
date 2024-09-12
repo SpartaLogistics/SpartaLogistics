@@ -5,7 +5,6 @@ import com.sparta.logistics.client.order.dto.OrderRequestDto;
 import com.sparta.logistics.client.order.dto.OrderResponseDto;
 import com.sparta.logistics.client.order.dto.OrderSearchDto;
 import com.sparta.logistics.client.order.service.OrderProcService;
-import com.sparta.logistics.client.order.service.OrderProductService;
 import com.sparta.logistics.client.order.service.OrderService;
 import com.sparta.logistics.client.order.model.Order;
 import com.sparta.logistics.common.controller.CustomApiController;

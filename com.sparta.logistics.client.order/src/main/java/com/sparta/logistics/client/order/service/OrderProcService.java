@@ -1,9 +1,7 @@
 package com.sparta.logistics.client.order.service;
 
 import com.sparta.logistics.client.order.common.exception.OrderProcException;
-import com.sparta.logistics.client.order.dto.OrderProductRequestDto;
-import com.sparta.logistics.client.order.dto.OrderRequestDto;
-import com.sparta.logistics.client.order.dto.OrderResponseDto;
+import com.sparta.logistics.client.order.dto.*;
 import com.sparta.logistics.client.order.model.Order;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +19,16 @@ public class OrderProcService {
 
     private final OrderService orderService;
     private final OrderProductService orderProductService;
+    private final DeliveryService deliveryService;
 
     /**
      * TODO 주문 생성
      */
+    @Transactional
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto) throws OrderProcException {
         // 1.주문 생성
         // 출발지 / 배송지 확인
-        Order order = orderService.createOrder(orderRequestDto);
+        OrderResponseDto order = orderService.createOrder(orderRequestDto);
 
         // 2.주문 상품 생성
         // 상품 확인 -> null / isDeleted
@@ -37,6 +37,10 @@ public class OrderProcService {
         orderProductService.createOrderProducts(orderId, orderProductList);
 
         // 3.배달 생성
+        DeliveryRequestDto deliveryInfo = orderRequestDto.getDeliveryInfo();
+        deliveryInfo.setOrderId(orderId);
+        // hub 확인
+        deliveryService.createDelivery(deliveryInfo);
 
         // 4.배달 경로 생성
 
