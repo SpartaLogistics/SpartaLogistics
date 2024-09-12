@@ -1,6 +1,6 @@
 package com.sparta.logistics.client.order.service;
 
-import com.sparta.logistics.client.order.common.exception.OrderException;
+import com.sparta.logistics.client.order.common.exception.OrderProcException;
 import com.sparta.logistics.client.order.dto.OrderRequestDto;
 import com.sparta.logistics.client.order.dto.OrderResponseDto;
 import com.sparta.logistics.client.order.dto.OrderSearchDto;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -24,7 +23,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     // 주문 생성
-    public Order createOrder(OrderRequestDto orderRequestDto) throws OrderException {
+    public Order createOrder(OrderRequestDto orderRequestDto) throws OrderProcException {
         // TODO 데이터 검증
         // 1. 발송처 확인
         // 2. 배송처 확인
@@ -42,11 +41,11 @@ public class OrderService {
     }
 
     // 주문 상세 조회
-    public Order getOrder(UUID orderId) throws OrderException {
+    public Order getOrder(UUID orderId) throws OrderProcException {
         // 주문 확인
         Order order = orderRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow( ()->
                 // 주문이 존재하지 않습니다.
-                new OrderException(ApiResultError.ORDER_NO_EXIST)
+                new OrderProcException(ApiResultError.ORDER_NO_EXIST)
         );
 
         // 관리자 외 자신의 주문만 조회 가능
@@ -54,22 +53,22 @@ public class OrderService {
     }
 
     // 주문 삭제
-    public Order deleteOrder(UUID orderId) throws OrderException {
+    public Order deleteOrder(UUID orderId) throws OrderProcException {
         // 주문 확인
         Order order = orderRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow( ()->
             // 주문이 존재하지 않습니다.
-            new OrderException(ApiResultError.ORDER_NO_EXIST)
+            new OrderProcException(ApiResultError.ORDER_NO_EXIST)
         );
         order.softDelete();
         return orderRepository.save(order);
     }
 
-    public OrderResponseDto updateOrder(OrderRequestDto orderRequestDto) throws OrderException {
+    public OrderResponseDto updateOrder(OrderRequestDto orderRequestDto) throws OrderProcException {
         UUID orderId = orderRequestDto.getOrderId();
         // 주문 확인
         Order order = orderRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow( ()->
                 // 주문이 존재하지 않습니다.
-                new OrderException(ApiResultError.ORDER_NO_EXIST)
+                new OrderProcException(ApiResultError.ORDER_NO_EXIST)
         );
 
         Order updatedOrder = Order.OrderUpdateBuilder()

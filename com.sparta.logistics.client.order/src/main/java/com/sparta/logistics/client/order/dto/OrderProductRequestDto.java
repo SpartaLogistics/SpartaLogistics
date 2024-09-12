@@ -1,10 +1,14 @@
 package com.sparta.logistics.client.order.dto;
 
+import lombok.Data;
+
 import java.util.UUID;
 
-public class OrderProductDto {
+@Data
+public class OrderProductRequestDto {
 
+    private UUID orderId;
+    private UUID orderProductId;
     private UUID productId;
-    private String productName;
     private int quantity;
 }
