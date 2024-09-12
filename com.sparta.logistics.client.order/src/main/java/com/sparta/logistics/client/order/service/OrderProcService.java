@@ -40,9 +40,11 @@ public class OrderProcService {
         DeliveryRequestDto deliveryInfo = orderRequestDto.getDeliveryInfo();
         deliveryInfo.setOrderId(orderId);
         // hub 확인
-        deliveryService.createDelivery(deliveryInfo);
+        DeliveryResponseDto delivery = deliveryService.createDelivery(deliveryInfo);
 
         // 4.배달 경로 생성
+        UUID deliveryId = delivery.getDeliveryId();
+        // hub path 조회 후 저장
 
         return null;
     }

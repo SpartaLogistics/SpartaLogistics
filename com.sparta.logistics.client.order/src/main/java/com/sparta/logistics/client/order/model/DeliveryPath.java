@@ -2,6 +2,7 @@ package com.sparta.logistics.client.order.model;
 
 
 import com.sparta.logistics.client.order.common.type.DeliveryStatus;
+import com.sparta.logistics.client.order.dto.DeliveryPathRequestDto;
 import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,7 @@ public class DeliveryPath extends Timestamped {
     private DeliveryStatus status;
 
     @Column(name = "sequence", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer sequence;
 
     @Column(name = "departure_id", nullable = false)
@@ -51,4 +53,22 @@ public class DeliveryPath extends Timestamped {
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
+
+    @Builder(builderMethodName = "DeliveryPathCreateBuilder", builderClassName = "DeliveryPathCreateBuilder")
+    public DeliveryPath(DeliveryPathRequestDto deliveryPathRequestDto, Delivery delivery) {
+        this.deliveryPathId = deliveryPathRequestDto.getDeliveryPathId();
+        this.delivery = delivery;
+        this.sequence = deliveryPathRequestDto.getSequence();
+        this.departureId = deliveryPathRequestDto.getDepartureId();
+        this.arrivalId = deliveryPathRequestDto.getArrivalId();
+        this.expectedDistance = deliveryPathRequestDto.getExpectedDistance();
+        this.expectedTime = deliveryPathRequestDto.getExpectedTime();
+        this.isDeleted = false;
+        this.status = DeliveryStatus.HUB_ARRIVAL;
+    }
+
 }
