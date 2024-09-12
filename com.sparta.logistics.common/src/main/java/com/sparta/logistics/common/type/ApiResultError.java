@@ -35,6 +35,8 @@ public enum ApiResultError {
     COMPANY_NO_EXIST("6000", "업체가 존재하지 않습니다."),
     INVALID_COMPANY_TYPE("6001", "유효하지 않은 업체 유형입니다."),
 
+    PRODUCT_NO_EXIST("7001", "상품이 존재하지 않습니다."),
+
 
     ERROR_INVALID_LOGIN("9101", "로그인정보가 유효하지 않습니다."),
 
