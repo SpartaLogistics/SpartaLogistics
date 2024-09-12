@@ -6,13 +6,17 @@ import com.sparta.logistics.client.order.dto.OrderResponseDto;
 import com.sparta.logistics.client.order.dto.OrderSearchDto;
 import com.sparta.logistics.client.order.service.OrderService;
 import com.sparta.logistics.client.order.model.Order;
+import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,7 +25,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderController extends CustomApiController {
 
     private final OrderService orderService;
 
@@ -31,11 +35,14 @@ public class OrderController {
      * @return
      */
     @PostMapping
-    public ApiResult createOrder(@RequestBody OrderRequestDto orderRequestDto) throws OrderException {
-        // TODO @RequestBody binding Error 처리, validation
+    public ApiResult createOrder(@RequestBody @Validated OrderRequestDto orderRequestDto,
+                                 Errors errors){
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        if (errors.hasErrors()) {
+            return bindError(errors, apiResult);
+        }
 
         log.info("Create order: {}", orderRequestDto);
-        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         // TODO orderProcService로 교체
         try {
             Order retOrder = orderService.createOrder(orderRequestDto);
@@ -86,13 +93,12 @@ public class OrderController {
     }
 
     /**
-     * 주문 수정
+     * 주문수정
      * @param orderRequestDto
      * @return
-     * @throws OrderException
      */
     @PatchMapping
-    public ApiResult updateOrder(@RequestBody OrderRequestDto orderRequestDto) throws OrderException {
+    public ApiResult updateOrder(@RequestBody OrderRequestDto orderRequestDto) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
 
         try {
