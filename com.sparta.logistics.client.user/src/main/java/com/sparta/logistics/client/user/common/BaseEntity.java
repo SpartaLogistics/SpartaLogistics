@@ -1,4 +1,4 @@
-package com.sparta.logistics.client.user.domain.model;
+package com.sparta.logistics.client.user.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -1,9 +1,9 @@
-package com.sparta.logistics.client.user.application.service;
+package com.sparta.logistics.client.user.service;
 
-import com.sparta.logistics.client.user.domain.Repository.UserRepository;
-import com.sparta.logistics.client.user.domain.model.User;
-import com.sparta.logistics.client.user.domain.model.UserVO;
-import com.sparta.logistics.client.user.presentation.request.UserRequest;
+import com.sparta.logistics.client.user.repository.UserRepository;
+import com.sparta.logistics.client.user.model.User;
+import com.sparta.logistics.client.user.model.UserVO;
+import com.sparta.logistics.client.user.dto.UserRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

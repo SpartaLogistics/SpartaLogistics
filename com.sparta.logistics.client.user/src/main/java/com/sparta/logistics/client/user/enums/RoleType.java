@@ -1,4 +1,4 @@
-package com.sparta.logistics.client.user.domain.model;
+package com.sparta.logistics.client.user.enums;
 
 public enum RoleType {
     CUSTOMER,

@@ -1,8 +1,8 @@
-package com.sparta.logistics.client.user.presentation.controller;
+package com.sparta.logistics.client.user.controller;
 
-import com.sparta.logistics.client.user.application.service.UserService;
-import com.sparta.logistics.client.user.domain.model.UserVO;
-import com.sparta.logistics.client.user.presentation.request.UserRequest;
+import com.sparta.logistics.client.user.service.UserService;
+import com.sparta.logistics.client.user.model.UserVO;
+import com.sparta.logistics.client.user.dto.UserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

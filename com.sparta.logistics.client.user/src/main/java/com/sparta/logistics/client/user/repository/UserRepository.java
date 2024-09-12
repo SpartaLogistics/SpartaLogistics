@@ -1,6 +1,6 @@
-package com.sparta.logistics.client.user.domain.Repository;
+package com.sparta.logistics.client.user.repository;
 
-import com.sparta.logistics.client.user.domain.model.User;
+import com.sparta.logistics.client.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
