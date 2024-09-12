@@ -16,12 +16,15 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
 public class ProductController extends CustomApiController {
+
+    // TODO : 권한 관리
 
     private final ProductService productService;
 
@@ -100,6 +103,21 @@ public class ProductController extends CustomApiController {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
         }
 
+        return apiResult;
+    }
+
+    @GetMapping("/search")
+    public ApiResult searchProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) UUID companyId
+    ) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            List<ProductResponseDto> searchResult = productService.searchProducts(name, companyId);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(searchResult);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
         return apiResult;
     }
 
