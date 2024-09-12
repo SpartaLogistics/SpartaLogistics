@@ -1,6 +1,7 @@
 package com.sparta.logistics.client.order.model;
 
 
+import com.sparta.logistics.client.order.dto.OrderProductRequestDto;
 import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,4 +39,25 @@ public class OrderProduct extends Timestamped {
     @ManyToOne
     @JoinColumn(name = "order_id", insertable = false, updatable = false)
     private Order order;
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
+
+    // order product create builder
+    @Builder(builderClassName = "OrderProductCreateBuilder", builderMethodName = "OrderProductCreateBuilder")
+    public OrderProduct(UUID orderId, OrderProductRequestDto orderProductRequestDto) {
+        this.orderId = orderId;
+        this.productId = orderProductRequestDto.getProductId();
+        this.quantity = orderProductRequestDto.getQuantity();
+        this.isDeleted = false;
+    }
+
+    // order producrt update builder
+    // 수량만 수정 가능
+    @Builder(builderClassName = "OrderProductUpdateBuilder", builderMethodName = "OrderProductUpdateBuilder")
+    public OrderProduct(OrderProductRequestDto orderProductRequestDto) {
+        this.orderProductId = orderProductRequestDto.getOrderId();
+        this.quantity = orderProductRequestDto.getQuantity();
+    }
 }

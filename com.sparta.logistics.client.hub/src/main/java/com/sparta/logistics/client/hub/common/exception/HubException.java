@@ -1,29 +1,31 @@
-package com.sparta.logistics.client.order.common.exception;
+package com.sparta.logistics.client.hub.common.exception;
 
 import com.sparta.logistics.common.type.ApiResultError;
+import lombok.Getter;
 
-public class OrderException extends Exception {
+@Getter
+public class HubException extends Exception {
 
     private static final long serialVersionUID = 2287905851925635164L;
 
     private final ApiResultError code;
 
-    public OrderException(ApiResultError code) {
-        super();
+    public HubException(ApiResultError code) {
+        super(code.getMessage());
         this.code = code;
     }
 
-    public OrderException(String message, Throwable cause, ApiResultError code) {
+    public HubException(String message, Throwable cause, ApiResultError code) {
         super(message, cause);
         this.code = code;
     }
 
-    public OrderException(String message, ApiResultError code) {
+    public HubException(String message, ApiResultError code) {
         super(message);
         this.code = code;
     }
 
-    public OrderException(Throwable cause, ApiResultError code) {
+    public HubException(Throwable cause, ApiResultError code) {
         super(cause);
         this.code = code;
     }

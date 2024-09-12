@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    @Transactional
     public UserVO createUser(UserRequest userRequest) {
         log.info("Attempting to create user: {}", userRequest.getUsername());
         User user = User.createUser(
@@ -34,10 +35,22 @@ public class UserService {
             throw new IllegalArgumentException("User already exists");
         }
     }
-
+    @Transactional(readOnly = true)
     public UserVO findByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
         return user.toUserVO();
+    }
+    @Transactional(readOnly = true)
+    public UserVO getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+        return user.toUserVO();
+    }
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+        user.delete(user.getId());
     }
 }

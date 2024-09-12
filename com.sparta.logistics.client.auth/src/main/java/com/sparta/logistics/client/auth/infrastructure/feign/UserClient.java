@@ -13,6 +13,6 @@ public interface UserClient {
     @PostMapping("/users")
     UserVO createUser(@RequestBody UserRequest userRequest);
 
-    @GetMapping("/users/{username}")
+    @GetMapping("/users/auth/{username}")
     UserVO findByUsername(@PathVariable("username") String username);
 }
