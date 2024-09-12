@@ -30,7 +30,7 @@ public class OrderRequestDto {
     private OrderStatus status;
 
     // 주문 품목
-    private List<OrderProductDto> orderProducts = new ArrayList<>();
+    private List<OrderProductRequestDto> orderProducts = new ArrayList<>();
 
 
 }

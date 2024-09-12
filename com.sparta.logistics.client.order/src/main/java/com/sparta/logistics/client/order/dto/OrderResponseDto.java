@@ -18,7 +18,7 @@ public class OrderResponseDto {
     private boolean isDeleted;
     private String remark;
 
-    private List<OrderProductDto> products = new ArrayList<>();
+    private List<OrderProductRequestDto> products = new ArrayList<>();
 
     //private String senderNm;        // 발송처
     //private String receiverNm;      // 도착처

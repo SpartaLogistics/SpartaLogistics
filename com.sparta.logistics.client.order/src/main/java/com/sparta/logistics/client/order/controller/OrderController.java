@@ -1,9 +1,11 @@
 package com.sparta.logistics.client.order.controller;
 
-import com.sparta.logistics.client.order.common.exception.OrderException;
+import com.sparta.logistics.client.order.common.exception.OrderProcException;
 import com.sparta.logistics.client.order.dto.OrderRequestDto;
 import com.sparta.logistics.client.order.dto.OrderResponseDto;
 import com.sparta.logistics.client.order.dto.OrderSearchDto;
+import com.sparta.logistics.client.order.service.OrderProcService;
+import com.sparta.logistics.client.order.service.OrderProductService;
 import com.sparta.logistics.client.order.service.OrderService;
 import com.sparta.logistics.client.order.model.Order;
 import com.sparta.logistics.common.controller.CustomApiController;
@@ -11,7 +13,6 @@ import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,8 @@ public class OrderController extends CustomApiController {
 
     private final OrderService orderService;
 
+    private final OrderProcService orderProcService;
+
     /**
      * 주문 생성
      * @param orderRequestDto
@@ -45,10 +48,11 @@ public class OrderController extends CustomApiController {
         log.info("Create order: {}", orderRequestDto);
         // TODO orderProcService로 교체
         try {
-            Order retOrder = orderService.createOrder(orderRequestDto);
-            apiResult.set(ApiResultError.NO_ERROR).setResultData(orderRequestDto);
+            //Order retOrder = orderService.createOrder(orderRequestDto);
+            orderProcService.createOrder(orderRequestDto);
+            apiResult.set(ApiResultError.NO_ERROR);
 
-        } catch(OrderException e) {
+        } catch(OrderProcException e) {
             apiResult.set(e.getCode());
         }
 
@@ -68,7 +72,7 @@ public class OrderController extends CustomApiController {
         try {
             orderService.deleteOrder(orderId);
             apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
-        } catch (OrderException e) {
+        } catch (OrderProcException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
         }
 
@@ -104,7 +108,7 @@ public class OrderController extends CustomApiController {
         try {
             OrderResponseDto order = orderService.updateOrder(orderRequestDto);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(order);
-        } catch(OrderException e) {
+        } catch(OrderProcException e) {
             apiResult.set(e.getCode());
         }
 
