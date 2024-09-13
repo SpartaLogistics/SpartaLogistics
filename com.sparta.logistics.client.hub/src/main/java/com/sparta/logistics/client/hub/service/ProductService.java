@@ -15,7 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -80,5 +82,15 @@ public class ProductService {
 
         product.softDelete();
         productRepository.save(product);
+    }
+
+    public List<ProductResponseDto> searchProducts(String name, UUID companyId) throws HubException {
+        List<Product> products = productRepository.searchProducts(name, companyId);
+
+        // 검색 결과가 없을 경우
+        if (products.isEmpty()) {
+            throw new HubException(ApiResultError.SEARCH_NO_RESULT);
+        }
+        return products.stream().map(ProductResponseDto::of).collect(Collectors.toList());
     }
 }
