@@ -9,6 +9,4 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
-
-    Optional<User> findBySlack_id(String slack_id);
 }
