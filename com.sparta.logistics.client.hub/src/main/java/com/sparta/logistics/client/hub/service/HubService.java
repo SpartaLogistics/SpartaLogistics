@@ -28,9 +28,13 @@ public class HubService {
     // 새로운 허브가 생성되면 전체 허브의 변화가 생겼기 때문에 삭제 필요
     @CacheEvict(cacheNames = "hubAllCache", allEntries = true)
     public HubResponseDto createHub(HubRequestDto requestDto) throws HubException {
+        // sequence 유일성 검증
+        validateUniqueSequence(requestDto.getSequence());
+
         // DTO를 사용하여 Hub 객체 생성
         Hub hub = Hub.createHubInfoBuilder()
                 .hubRequestDto(requestDto)
+                .sequence(requestDto.getSequence())
                 .build();
 
         return HubResponseDto.of(hubRepository.save(hub));
@@ -60,6 +64,11 @@ public class HubService {
         // TODO : 권한 관리 : 생성,수정,삭제는 마스터 관리자만 가능
         Hub hub = hubRepository.findByHubId(hubId)
                 .orElseThrow(() -> new HubException(ApiResultError.HUB_NO_EXIST));
+
+        // sequence가 변경되었다면 유일성 검증
+        if (requestDto.getSequence() != null && !requestDto.getSequence().equals(hub.getSequence())) {
+            validateUniqueSequence(requestDto.getSequence());
+        }
 
         hub.update(requestDto);
         return HubResponseDto.of(hubRepository.save(hub));
@@ -92,5 +101,11 @@ public class HubService {
             throw new HubException(ApiResultError.SEARCH_NO_RESULT);
         }
         return hubs.stream().map(HubResponseDto::of).collect(Collectors.toList());
+    }
+
+    private void validateUniqueSequence(Integer sequence) throws HubException {
+        if (hubRepository.existsBySequenceAndIsDeletedFalse(sequence)) {
+            throw new HubException(ApiResultError.HUB_SEQUENCE_DUPLICATE);
+        }
     }
 }

@@ -16,4 +16,5 @@ public interface HubRepository extends JpaRepository<Hub, UUID>, HubRepositoryCu
 
     List<Hub> findAllByIsDeletedFalse();
 
+    boolean existsBySequenceAndIsDeletedFalse(Integer sequence);
 }

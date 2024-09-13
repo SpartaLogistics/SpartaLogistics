@@ -35,4 +35,10 @@ public class HubRequestDto {
             message = "경도 정보가 누락되었습니다."
     )
     private BigDecimal longitude; // 경도
+
+    @NotNull(groups = {HubValid0001.class},
+            message = "허브 순서 정보가 누락되었습니다."
+    )
+    private Integer sequence;     // 허브 순서
+
 }
