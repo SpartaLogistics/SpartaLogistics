@@ -15,8 +15,11 @@ public enum ApiResultError {
     USER_WITHDRAW_NO_AUTH("2000", "게정을 탈퇴할 권한이 없습니다."),
     USER_UPDATE_NO_AUTH("2001", "정보를 수정할 권한이 없습니다."),
     USER_UPDATE_NOT_ALLOWED("2002", "정보를 수정할 수 없는 계정입니다."),
+    USER_NO_EXIST("2003", "유저가 존재하지 않습니다."),
     USER_INFO_ACCESS_DENIED("2100", "회원정보를 조회할 권한이 없습니다."),
     USER_ID_EXIST("2990", "이미 존재하는 ID 입니다."),
+    DELIVERY_MANAGER_NO_EXIST("2200", "배솜당당자가 존재하지 않습니다."),
+
 
     ERROR_AI_API("3000", "AI 오류가 발생했습니다"),
     ERROR_AI_API_NO_PRODUCT("3001", "해당 상품이 존재하지 않습니다."),
@@ -39,6 +42,7 @@ public enum ApiResultError {
 
     PRODUCT_NO_EXIST("7001", "상품이 존재하지 않습니다."),
 
+    MESSAGE_NO_EXIST("8001", "메시지가 존재하지 않습니다."),
 
     ERROR_INVALID_LOGIN("9101", "로그인정보가 유효하지 않습니다."),
 
