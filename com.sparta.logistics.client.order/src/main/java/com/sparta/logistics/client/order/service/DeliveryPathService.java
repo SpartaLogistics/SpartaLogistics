@@ -35,8 +35,8 @@ public class DeliveryPathService {
         return DeliveryPathResponseDto.of(deliveryPathRepository.save(deliveryPath));
     }
 
-    public List<DeliveryPathResponseDto> getAllDeliveryPaths(UUID deliveryId) {
-        return deliveryPathRepository.findAllByDeliveryIdAndIsDeletedFalse(deliveryId).stream()
+    public List<DeliveryPathResponseDto> getAllDeliveryPaths(Delivery delivery) {
+        return deliveryPathRepository.findAllByDeliveryAndIsDeletedFalse(delivery).stream()
                 .map(DeliveryPathResponseDto::of)
                 .toList();
     }
