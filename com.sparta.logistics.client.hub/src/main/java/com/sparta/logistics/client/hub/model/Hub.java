@@ -37,28 +37,28 @@ public class Hub extends Timestamped {
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
-    @OneToMany(mappedBy = "departureId")
+    @OneToMany(mappedBy = "departureHub")
     private List<HubPath> departurePaths = new ArrayList<>();
 
-    @OneToMany(mappedBy = "arrivalId")
+    @OneToMany(mappedBy = "arrivalHub")
     private List<HubPath> arrivalPaths = new ArrayList<>();
 
-    @OneToMany(mappedBy = "nextHubId")
-    private List<HubPath> nextHubPaths = new ArrayList<>();
-
-    // 소프트 삭제 메서드
-    public void softDelete() {
-        this.isDeleted = true;
-    }
-
+    @Column(nullable = false)
+    private Integer sequence;
 
     // 허브 생성용 빌더 클래스
     @Builder(builderClassName = "CreateHubInfoBuilder", builderMethodName = "createHubInfoBuilder")
-    public Hub(HubRequestDto hubRequestDto) {
+    public Hub(HubRequestDto hubRequestDto, Integer sequence) {
         this.name = hubRequestDto.getName();
         this.address = hubRequestDto.getAddress();
         this.latitude = hubRequestDto.getLatitude();
         this.longitude = hubRequestDto.getLongitude();
+        this.sequence = sequence;
+    }
+
+    // 소프트 삭제 메서드
+    public void softDelete() {
+        this.isDeleted = true;
     }
 
     // 허브 수정용 메서드
@@ -74,6 +74,9 @@ public class Hub extends Timestamped {
         }
         if (hubRequestDto.getLongitude() != null) {
             this.longitude = hubRequestDto.getLongitude();
+        }
+        if (hubRequestDto.getSequence() != null) {
+            this.sequence = hubRequestDto.getSequence();
         }
     }
 
