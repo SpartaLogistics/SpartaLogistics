@@ -49,6 +49,11 @@ public class Delivery extends Timestamped{
 
     private Boolean isDeleted = false;
 
+    private Long totalDistance;
+
+    private Long totalTime;
+
+
     @OneToMany(mappedBy = "delivery")
     private List<DeliveryPath> deliveryPathsList;
 

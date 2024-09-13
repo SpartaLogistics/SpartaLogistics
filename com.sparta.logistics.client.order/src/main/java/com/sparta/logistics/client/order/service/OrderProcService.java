@@ -2,7 +2,6 @@ package com.sparta.logistics.client.order.service;
 
 import com.sparta.logistics.client.order.common.exception.OrderProcException;
 import com.sparta.logistics.client.order.dto.*;
-import com.sparta.logistics.client.order.model.Order;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

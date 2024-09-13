@@ -34,7 +34,6 @@ public class DeliveryPath extends Timestamped {
     private DeliveryStatus status;
 
     @Column(name = "sequence", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer sequence;
 
     @Column(name = "departure_id", nullable = false)
