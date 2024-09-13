@@ -1,8 +1,8 @@
 package com.sparta.logistics.client.user.model;
 
-import com.sparta.logistics.client.user.common.BaseEntity;
 import com.sparta.logistics.client.user.dto.ManagerRequestDto;
 import com.sparta.logistics.client.user.enums.DeliveryManagerType;
+import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @ToString
-public class DeliveryManager extends BaseEntity {
+public class DeliveryManager extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "delivery_manager_id")
@@ -29,6 +29,13 @@ public class DeliveryManager extends BaseEntity {
 
     @Column(name = "delivery_manager_type")
     private DeliveryManagerType type;
+
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
 
     public DeliveryManager(User user, String slack_id, DeliveryManagerType type) {
         this.user = user;

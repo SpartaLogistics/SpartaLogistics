@@ -26,7 +26,8 @@ public class UserService {
                 userRequest.getPassword(),
                 userRequest.getEmail(),
                 userRequest.getSlackId(),
-                userRequest.getRole()
+                userRequest.getRole(),
+                false
         );
         try {
             User saved = userRepository.save(user);
@@ -53,6 +54,6 @@ public class UserService {
     public void deleteUser(Long userId) throws UserException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ApiResultError.USER_NO_EXIST));
-        user.delete(user.getId());
+        user.softDelete();
     }
 }

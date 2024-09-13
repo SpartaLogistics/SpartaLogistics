@@ -52,7 +52,7 @@ public class DeliveryManagerService {
     public DeliveryManagerResponse deleteDeliveryManager(UUID deliveryId, Long userid) throws UserException {
         DeliveryManager deliveryManager = deliveryManagerRepository.findById(deliveryId)
                 .orElseThrow(()-> new UserException(ApiResultError.DELIVERY_MANAGER_NO_EXIST));
-        deliveryManager.delete(userid);
+        deliveryManager.softDelete();
         return DeliveryManagerResponse.of(deliveryManager);
     }
 }

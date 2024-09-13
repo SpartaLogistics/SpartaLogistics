@@ -28,14 +28,12 @@ public class DeliveryManagerResponse {
             message = "manager_type이 누락되었습니다."
     )
     private DeliveryManagerType delivery_manager_type;
-    private Boolean is_deleted;
 
     public static DeliveryManagerResponse of(DeliveryManager deliveryManager) {
         return DeliveryManagerResponse.builder()
                 .delivery_manager_id(deliveryManager.getId())
                 .slack_id(deliveryManager.getSlack_id())
                 .delivery_manager_type(deliveryManager.getType())
-                .is_deleted(deliveryManager.isDeleted())
                 .build();
     }
 }
