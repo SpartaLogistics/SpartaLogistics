@@ -26,11 +26,6 @@ public class HubPathRequestDto {
     private UUID arrivalHubId; // 도착 허브 ID
 
     @NotNull(groups = {HubPathValid0001.class},
-            message = "다음 이동 허브 ID 정보가 누락되었습니다."
-    )
-    private UUID nextHubId; // 다음 허브 ID
-
-    @NotNull(groups = {HubPathValid0001.class},
             message = "출발 허브 ID 정보가 누락되었습니다."
     )
     private Long duration; // 소요 시간
