@@ -16,6 +16,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
+import java.util.Arrays;
+
 @Slf4j
 @Component
 public class LocalJwtAuthenticationFilter implements GlobalFilter {
@@ -23,10 +25,19 @@ public class LocalJwtAuthenticationFilter implements GlobalFilter {
     @Value("${service.jwt.secret-key}")
     private String secretKey;
 
+    private static final String[] RESOURCE_WHITELIST = {
+            "v3/api-docs", // v3 : SpringBoot 3(없으면 swagger 예시 api 목록 제공)
+            "/swagger-ui/",
+            "/swagger-resources/",
+            "/webjars/",
+    };
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
-        if (path.equals("/auth/signin")||path.equals("/auth/signup")||path.startsWith("/users")) {
+        if (path.equals("/auth/signin")||path.equals("/auth/signup")||path.startsWith("/users")
+                || Arrays.stream(RESOURCE_WHITELIST).anyMatch(path::contains))
+        {
             return chain.filter(exchange);  // /signIn 경로는 필터를 적용하지 않음
         }
 

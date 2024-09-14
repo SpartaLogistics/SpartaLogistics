@@ -8,6 +8,8 @@ import com.sparta.logistics.client.user.dto.UserRequest;
 import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.type.ApiResultError;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -16,10 +18,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "User 요청 API", description = "User 요청 내역 관리 목적의 API Docs")
 @RequiredArgsConstructor
 public class UserController extends CustomApiController {
     private final UserService userService;
 
+    @Operation(summary = "유저 생성", description = "유저 생성")
     @PostMapping
     public ApiResult createUser(@RequestBody @Validated({UserValid0001.class}) UserRequest userRequest, Errors errors) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
@@ -35,7 +39,7 @@ public class UserController extends CustomApiController {
 
         return apiResult;
     }
-
+    @Operation(summary = "로그인시 유저 검색", description = "로그인 유저 검색")
     @GetMapping("/auth/{username}")
     public ApiResult findByUsername(@PathVariable String username) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
@@ -47,6 +51,7 @@ public class UserController extends CustomApiController {
         }
         return apiResult;
     }
+    @Operation(summary = "userId로 유저 검색", description = "userId로 유저 검색")
     @GetMapping("/{userId}")
     public ApiResult getUserInfo(@PathVariable Long userId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
@@ -58,6 +63,7 @@ public class UserController extends CustomApiController {
         }
         return apiResult;
     }
+    @Operation(summary = "userId로 유저 삭제", description = "userId로 유저 삭제")
     @DeleteMapping("/{userId}")
     public ApiResult deleteUser(@PathVariable Long userId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
