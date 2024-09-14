@@ -56,19 +56,6 @@ public class HubPathController extends CustomApiController {
         return apiResult;
     }
 
-    @GetMapping
-    public ApiResult getAllHubPaths(Pageable pageable) {
-        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-        try {
-            Page<HubPathResponseDto> hubPaths = hubPathService.getAllHubPaths(pageable);
-            apiResult.set(ApiResultError.NO_ERROR).setResultData(hubPaths);
-        } catch (HubException e) {
-            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
-        }
-        return apiResult;
-    }
-
-
     @PatchMapping("/{hubPathId}")
     public ApiResult updateHubPath(@RequestBody HubPathRequestDto requsetDto, @PathVariable UUID hubPathId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
@@ -93,7 +80,43 @@ public class HubPathController extends CustomApiController {
         return apiResult;
     }
 
+    /**
+     * 허브 이동 경로 검색 API
+     *
+     * @param departureHubId 출발 허브의 UUID (옵션)
+     * @param arrivalHubId   도착 허브의 UUID (옵션)
+     * @param minDuration    최소 소요시간 (ex: 100 : 100이상인 경로 검색)
+     * @param maxDuration    최대 소요시간 (ex: 100 : 100이하인 경로 검색)
+     */
+    @GetMapping("/search")
+    public ApiResult searchHubPath(
+            @RequestParam(required = false) UUID departureHubId,
+            @RequestParam(required = false) UUID arrivalHubId,
+            @RequestParam(required = false) Long minDuration,
+            @RequestParam(required = false) Long maxDuration,
+            Pageable pageable
+    ) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            Page<HubPathResponseDto> paths = hubPathService.searchHubPaths(departureHubId, arrivalHubId, minDuration, maxDuration, pageable);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(paths);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
+    }
 
+
+    /**
+     * 허브 간 경로 리스트 조회 API
+     *
+     * @param departureHubId 출발 허브의 UUID (필수)
+     * @param arrivalHubId   도착 허브의 UUID (필수)
+     * @return ApiResult 허브 경로 리스트를 담은 ApiResult 객체
+     * @description 출발 허브 ID와 도착 허브 ID를 입력받아 해당하는 허브 경로 리스트를 조회
+     * 정상 조회 시 ApiResult에 NO_ERROR 코드와 함께 허브 경로 리스트가 반환
+     * 허브 경로 조회 실패 시 HubException을 처리하며, ApiResult에 에러 코드와 에러 메시지가 포함
+     */
     @GetMapping("/hubList")
     public ApiResult getHubPathList(
             @RequestParam UUID departureHubId,

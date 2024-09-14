@@ -1,8 +1,6 @@
 package com.sparta.logistics.client.hub.repository;
 
 import com.sparta.logistics.client.hub.model.HubPath;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -16,7 +14,5 @@ public interface HubPathRepository extends JpaRepository<HubPath, UUID>, HubPath
     default Optional<HubPath> findByHubPathId(UUID hubPathId) {
         return findByHubPathIdAndIsDeletedFalse(hubPathId);
     }
-
-    Page<HubPath> findAllByIsDeletedFalse(Pageable pageable);
 
 }

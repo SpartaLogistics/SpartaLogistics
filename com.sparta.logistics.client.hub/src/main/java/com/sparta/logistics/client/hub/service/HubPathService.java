@@ -105,8 +105,8 @@ public class HubPathService {
     }
 
     @Transactional(readOnly = true)
-    public Page<HubPathResponseDto> getAllHubPaths(Pageable pageable) throws HubException {
-        Page<HubPath> hubPaths = hubPathRepository.findAllByIsDeletedFalse(pageable);
+    public Page<HubPathResponseDto> searchHubPaths(UUID departureHubId, UUID arrivalHubId, Long minDuration, Long maxDuration, Pageable pageable) throws HubException {
+        Page<HubPath> hubPaths = hubPathRepository.searchPaths(departureHubId, arrivalHubId, minDuration, maxDuration, pageable);
         return hubPaths.map(HubPathResponseDto::of);
     }
 }
