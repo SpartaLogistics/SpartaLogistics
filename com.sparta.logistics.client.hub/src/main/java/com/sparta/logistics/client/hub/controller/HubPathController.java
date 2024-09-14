@@ -56,6 +56,19 @@ public class HubPathController extends CustomApiController {
         return apiResult;
     }
 
+    @GetMapping
+    public ApiResult getAllHubPaths() {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            List<HubPathResponseDto> hubPaths = hubPathService.getAllHubPaths();
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(hubPaths);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
+    }
+
+
     @PatchMapping("/{hubPathId}")
     public ApiResult updateHubPath(@RequestBody HubPathRequestDto requsetDto, @PathVariable UUID hubPathId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);

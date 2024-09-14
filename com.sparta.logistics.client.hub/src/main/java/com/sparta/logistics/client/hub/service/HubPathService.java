@@ -9,6 +9,9 @@ import com.sparta.logistics.client.hub.repository.HubPathRepository;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ public class HubPathService {
     private final HubService hubService;
     private final HubPathRepository hubPathRepository;
 
+    @CacheEvict(cacheNames = "hubPathAllCache", allEntries = true)
     public HubPathResponseDto createHubPath(HubPathRequestDto requestDto) throws HubException {
         Hub departureHub = hubService.findHubById(requestDto.getDepartureHubId());
         Hub arrivalHub = hubService.findHubById(requestDto.getArrivalHubId());
@@ -42,9 +47,11 @@ public class HubPathService {
     }
 
 
+    @CachePut(cacheNames = "hubPathCache", key = "#hubPathId")
+    @CacheEvict(cacheNames = "hubPathAllCache", allEntries = true)
     @Transactional
     public HubPathResponseDto updateHubPath(UUID hubPathId, HubPathRequestDto requestDto) throws HubException {
-        HubPath hubPath = hubPathRepository.findByHubPathId(hubPathId)
+        HubPath hubPath = hubPathRepository.findByHubPathIdWithHubs(hubPathId)
                 .orElseThrow(() -> new HubException(ApiResultError.HUB_PATH_NO_EXIST));
 
         Hub newDepartureHub = hubService.findHubById(requestDto.getDepartureHubId());
@@ -55,23 +62,36 @@ public class HubPathService {
         return HubPathResponseDto.of(hubPath);
     }
 
+    @CacheEvict(cacheNames = {"hubPathCache", "hubPathAllCache"}, key = "#hubPathId")
     @Transactional
     public void deleteHubPath(UUID hubPathId) throws HubException {
-        HubPath hubPath = hubPathRepository.findByHubPathId(hubPathId)
+        HubPath hubPath = hubPathRepository.findByHubPathIdWithHubs(hubPathId)
                 .orElseThrow(() -> new HubException(ApiResultError.HUB_PATH_NO_EXIST));
 
         hubPath.softDelete();
         hubPathRepository.save(hubPath);
     }
 
+    @Cacheable(cacheNames = "hubPathCache", key = "#hubPathId")
     @Transactional(readOnly = true)
     public HubPathResponseDto getHubPath(UUID hubPathId) throws HubException {
-        HubPath hubPath = hubPathRepository.findByHubPathId(hubPathId)
+        HubPath hubPath = hubPathRepository.findByHubPathIdWithHubs(hubPathId)
                 .orElseThrow(() -> new HubException(ApiResultError.HUB_PATH_NO_EXIST));
 
         return HubPathResponseDto.of(hubPath);
     }
 
+    @Cacheable(cacheNames = "hubPathAllCache", key = "getMethodName()")
+    @Transactional(readOnly = true)
+    public List<HubPathResponseDto> getAllHubPaths() throws HubException {
+        List<HubPath> hubPaths = hubPathRepository.findAllByIsDeletedFalse();
+        return hubPaths.stream()
+                .map(HubPathResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
+
+    @Cacheable(cacheNames = "hubPathListCache", key = "{#departureHubId, #arrivalHubId}")
     public List<HubPathResponseDto> getHubPathList(UUID departureHubId, UUID arrivalHubId) throws HubException {
 
         Hub departureHub = hubService.findHubById(departureHubId);
