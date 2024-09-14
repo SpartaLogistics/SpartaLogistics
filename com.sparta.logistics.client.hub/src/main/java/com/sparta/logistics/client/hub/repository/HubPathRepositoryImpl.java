@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class HubPathRepositoryImpl extends QuerydslRepositorySupport implements HubPathRepositoryCustom {
@@ -51,6 +52,33 @@ public class HubPathRepositoryImpl extends QuerydslRepositorySupport implements 
                 .where(qDepartureHub.sequence.between(endHub.getSequence(), startHub.getSequence() - 1)
                         .and(qHubPath.isDeleted.eq(false)))
                 .orderBy(qDepartureHub.sequence.asc())
+                .fetch();
+    }
+
+
+    @Override
+    public Optional<HubPath> findByHubPathIdWithHubs(UUID hubPathId) {
+        QHubPath hubPath = QHubPath.hubPath;
+        return Optional.ofNullable(queryFactory
+                .selectFrom(hubPath)
+                .join(hubPath.departureHub).fetchJoin()
+                .join(hubPath.arrivalHub).fetchJoin()
+                .where(hubPath.hubPathId.eq(hubPathId)
+                        .and(hubPath.isDeleted.isFalse()))
+                .fetchOne());
+    }
+
+    @Override
+    public List<HubPath> findAllByIsDeletedFalse() {
+        QHubPath qHubPath = QHubPath.hubPath;
+        QHub qDepartureHub = QHub.hub;
+        QHub qArrivalHub = new QHub("arrivalHub");
+
+        return queryFactory
+                .selectFrom(qHubPath)
+                .join(qHubPath.departureHub, qDepartureHub).fetchJoin()
+                .join(qHubPath.arrivalHub, qArrivalHub).fetchJoin()
+                .where(qHubPath.isDeleted.isFalse())
                 .fetch();
     }
 
