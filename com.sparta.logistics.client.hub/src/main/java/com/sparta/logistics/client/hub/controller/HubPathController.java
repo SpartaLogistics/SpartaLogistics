@@ -8,6 +8,8 @@ import com.sparta.logistics.client.hub.service.HubPathService;
 import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.type.ApiResultError;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,14 +21,16 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/hub-paths")
 @RequiredArgsConstructor
+@RequestMapping("/hub-paths")
+@Tag(name = "HubPath 허브 이동 경로 요청 API", description = "HubPath API Docs")
 public class HubPathController extends CustomApiController {
 
     private final HubPathService hubPathService;
 
     @PostMapping
-    public ApiResult createHunPath(
+    @Operation(summary = "허브 이동 경로 생성 API", description = "허브 이동 경로를 생성합니다.")
+    public ApiResult createHubPath(
             @RequestBody @Validated({HubPathValid0001.class}) HubPathRequestDto requestDto,
             Errors errors) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
@@ -45,6 +49,7 @@ public class HubPathController extends CustomApiController {
     }
 
     @GetMapping("/{hubPathId}")
+    @Operation(summary = "허브 조회 API", description = "삭제되지 않은 허브 이동 경로를 조회합니다.")
     public ApiResult getHubPath(@PathVariable UUID hubPathId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
@@ -57,6 +62,7 @@ public class HubPathController extends CustomApiController {
     }
 
     @GetMapping
+    @Operation(summary = "허브 이동 경로 목록 조회 API", description = "삭제되지 않은 허브 이동 경로 목록을 조회합니다.")
     public ApiResult getAllHubPaths() {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
@@ -70,10 +76,11 @@ public class HubPathController extends CustomApiController {
 
 
     @PatchMapping("/{hubPathId}")
-    public ApiResult updateHubPath(@RequestBody HubPathRequestDto requsetDto, @PathVariable UUID hubPathId) {
+    @Operation(summary = "허브 이동 경로 수정 API", description = "삭제되지 않은 허브 이동 경로를 수정합니다.")
+    public ApiResult updateHubPath(@RequestBody HubPathRequestDto requestDto, @PathVariable UUID hubPathId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
-            HubPathResponseDto responseDto = hubPathService.updateHubPath(hubPathId, requsetDto);
+            HubPathResponseDto responseDto = hubPathService.updateHubPath(hubPathId, requestDto);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -82,11 +89,12 @@ public class HubPathController extends CustomApiController {
     }
 
     @DeleteMapping("/{hubPathId}")
+    @Operation(summary = "허브 이동 경로 삭제 API", description = "허브 이동 경로를 삭제합니다. (논리적 삭제)")
     public ApiResult deleteHubPath(@PathVariable UUID hubPathId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
             hubPathService.deleteHubPath(hubPathId);
-            apiResult.set(ApiResultError.NO_ERROR);
+            apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
         }
@@ -102,6 +110,8 @@ public class HubPathController extends CustomApiController {
      * @param maxDuration    최대 소요시간 (ex: 100 : 100이하인 경로 검색)
      */
     @GetMapping("/search")
+    @Operation(summary = "허브 이동 경로 검색 API",
+            description = "출발 허브 ID(departureHubId), 도착 허브 ID(arrivalHubId), 최소 소요시간(minDuration), 최대 소요시간(maxDuration)를 기준으로 허브 이동 경로를 검색합니다.")
     public ApiResult searchHubPath(
             @RequestParam(required = false) UUID departureHubId,
             @RequestParam(required = false) UUID arrivalHubId,
@@ -131,6 +141,7 @@ public class HubPathController extends CustomApiController {
      * 허브 경로 조회 실패 시 HubException을 처리하며, ApiResult에 에러 코드와 에러 메시지가 포함
      */
     @GetMapping("/hubList")
+    @Operation(summary = "허브 이동 경로 리스트 조회 API", description = "출발 허브 ID(departureHubId) 도착 허브 ID(arrivalHubId)간의 허브 리스트를 조회합니다.")
     public ApiResult getHubPathList(
             @RequestParam UUID departureHubId,
             @RequestParam UUID arrivalHubId) {
