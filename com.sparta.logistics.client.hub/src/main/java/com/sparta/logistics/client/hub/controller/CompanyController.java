@@ -9,6 +9,8 @@ import com.sparta.logistics.client.hub.service.CompanyService;
 import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.type.ApiResultError;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Company 업체 요청 API", description = "Company API Docs")
 @RequestMapping("/companies")
 public class CompanyController extends CustomApiController {
 
@@ -27,6 +30,7 @@ public class CompanyController extends CustomApiController {
     private final CompanyService companyService;
 
     @PostMapping
+    @Operation(summary = "업체 생성 API", description = "업체를 생성합니다.")
     public ApiResult createCompany(@RequestBody @Validated({CompanyVaild0001.class}) CompanyRequestDto requestDto, Errors errors
     ) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
@@ -44,6 +48,7 @@ public class CompanyController extends CustomApiController {
     }
 
     @GetMapping("/{companyId}")
+    @Operation(summary = "업체 조회 API", description = "삭제되지 않은 특정 업체를 조회합니다.")
     public ApiResult getCompany(@PathVariable UUID companyId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
@@ -56,6 +61,7 @@ public class CompanyController extends CustomApiController {
     }
 
     @GetMapping
+    @Operation(summary = "업체 목록 조회 API", description = "삭제되지 않은 업체 목록을 조회합니다.")
     public ApiResult getAllCompanies() {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
@@ -68,6 +74,7 @@ public class CompanyController extends CustomApiController {
     }
 
     @PatchMapping("/{companyId}")
+    @Operation(summary = "업체 목록 조회 API", description = "삭제되지 않은 업체 목록을 조회합니다.")
     public ApiResult updateCompany(@PathVariable UUID companyId, @RequestBody CompanyRequestDto requestDto) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
@@ -80,6 +87,7 @@ public class CompanyController extends CustomApiController {
     }
 
     @DeleteMapping("/{companyId}")
+    @Operation(summary = "업체 삭제 API", description = "업체를 삭제합니다. (논리적 삭제)")
     public ApiResult deleteCompany(@PathVariable UUID companyId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
@@ -92,6 +100,7 @@ public class CompanyController extends CustomApiController {
     }
 
     @GetMapping("/search")
+    @Operation(summary = "업체 검색 API", description = "업체명, 업체 타입, 주소, 관리 허브 ID를 기준으로 업체를 검색합니다.")
     public ApiResult searchCompanies(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) CompanyType companyType,
