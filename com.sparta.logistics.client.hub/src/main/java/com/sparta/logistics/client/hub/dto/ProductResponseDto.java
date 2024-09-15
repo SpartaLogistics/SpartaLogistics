@@ -24,12 +24,15 @@ public class ProductResponseDto {
 
     private UUID productId; //상품 업체
 
+    private Long price;
+
     // Product 엔티티를 ProductResponseDto로 변환하는 메서드
     public static ProductResponseDto of(Product product) {
         return ProductResponseDto.builder()
                 .productId(product.getProductId())
                 .companyId(product.getCompanyId())
                 .name(product.getName())
+                .price(product.getPrice())
                 .companyId(product.getCompanyId())
                 .quantity(product.getQuantity())
                 .managingHubId(product.getManagingHubId())

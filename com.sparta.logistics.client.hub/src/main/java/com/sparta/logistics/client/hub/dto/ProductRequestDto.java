@@ -30,4 +30,9 @@ public class ProductRequestDto {
             message = "상품 수량 정보가 누락되었습니다."
     )
     private int quantity;
+
+    @NotNull(groups = {ProductValid0001.class},
+            message = "상품 가격 정보가 누락되었습니다."
+    )
+    private Long price;
 }
