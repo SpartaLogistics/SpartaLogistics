@@ -130,4 +130,32 @@ public class ProductController extends CustomApiController {
         return apiResult;
     }
 
+    @PatchMapping("/external/increase/{productId}")
+    @Operation(summary = "상품 수량 증가 API (외부용)", description = "상품의 수량을 증가시킵니다.")
+    public ApiResult increaseQuantity(@PathVariable UUID productId, @RequestParam int quantity) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            ProductResponseDto responseDto = productService.increaseQuantity(productId, quantity);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
+    }
+
+
+    @PatchMapping("/external/decrease/{productId}")
+    @Operation(summary = "상품 수량 감소 API (외부용)", description = "상품의 수량을 감소시킵니다.")
+    public ApiResult externalDecreaseQuantity(@PathVariable UUID productId, @RequestParam int quantity) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            ProductResponseDto responseDto = productService.decreaseQuantity(productId, quantity);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
+    }
+
+
 }

@@ -93,4 +93,34 @@ public class ProductService {
         }
         return products.stream().map(ProductResponseDto::of).collect(Collectors.toList());
     }
+
+    @Transactional
+    public ProductResponseDto increaseQuantity(UUID productId, int quantity) throws HubException {
+        log.info("Increasing quantity for product: {} by {}", productId, quantity);
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new HubException(ApiResultError.PRODUCT_NO_EXIST));
+
+        product.setQuantity(product.getQuantity() + quantity);
+        productRepository.save(product);
+
+        log.info("{}의 수량을 증가시킵니다. {} -> {}", product.getName(), product.getQuantity(), product.getQuantity() + quantity);
+        return ProductResponseDto.of(product);
+    }
+
+    @Transactional
+    public ProductResponseDto decreaseQuantity(UUID productId, int quantity) throws HubException {
+        log.info("Decreasing quantity for product: {} by {}", productId, quantity);
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new HubException(ApiResultError.PRODUCT_NO_EXIST));
+
+        int newQuantity = product.getQuantity() - quantity;
+        if (newQuantity < 0) {
+            log.warn("{}의 수량이 부족합니다 : {}", product.getName(), product.getQuantity());
+            throw new HubException(ApiResultError.STOCK_NO_EXIST);
+        }
+        product.setQuantity(newQuantity);
+        productRepository.save(product);
+        log.info("Quantity decreased for product: {}. New quantity: {}", productId, product.getQuantity());
+        return ProductResponseDto.of(product);
+    }
 }

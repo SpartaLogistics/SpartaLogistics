@@ -27,7 +27,11 @@ public class Product extends Timestamped {
     private Company company;
 
     @Column
+    @Setter
     private Integer quantity;
+
+    @Column
+    private Long price;
 
 
     @Column(nullable = false)
@@ -39,6 +43,7 @@ public class Product extends Timestamped {
         this.name = productRequestDto.getName();
         this.company = company;
         this.quantity = productRequestDto.getQuantity();
+        this.price = productRequestDto.getPrice();
     }
 
     // 상품 수정용 메서드
@@ -50,6 +55,7 @@ public class Product extends Timestamped {
             this.company = company;
         }
         this.quantity = productRequestDto.getQuantity();
+        this.price = productRequestDto.getPrice();
     }
 
     // 소프트 삭제 메서드
