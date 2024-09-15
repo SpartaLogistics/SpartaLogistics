@@ -33,7 +33,6 @@ public class ProductResponseDto {
                 .companyId(product.getCompanyId())
                 .name(product.getName())
                 .price(product.getPrice())
-                .companyId(product.getCompanyId())
                 .quantity(product.getQuantity())
                 .managingHubId(product.getManagingHubId())
                 .build();
