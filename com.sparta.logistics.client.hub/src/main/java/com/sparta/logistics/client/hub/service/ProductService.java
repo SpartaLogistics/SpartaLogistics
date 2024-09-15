@@ -7,6 +7,7 @@ import com.sparta.logistics.client.hub.dto.ProductResponseDto;
 import com.sparta.logistics.client.hub.model.Company;
 import com.sparta.logistics.client.hub.model.Product;
 import com.sparta.logistics.client.hub.repository.ProductRepository;
+import com.sparta.logistics.common.kafka.ProductDeleted;
 import com.sparta.logistics.common.model.EventSerializer;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
@@ -88,7 +89,15 @@ public class ProductService {
         productRepository.save(product);
 
         // 상품 삭제 이벤트 발행
-        kafkaTemplate.send("product-deleted", EventSerializer.serialize(ProductResponseDto.of(product)));
+        ProductDeleted productDeleted = ProductDeleted.of(
+                product.getProductId(),
+                product.getName(),
+                product.getCompanyId(),
+                product.getQuantity(),
+                product.getManagingHubId(),
+                product.getPrice()
+        );
+        kafkaTemplate.send("product-deleted", EventSerializer.serialize(productDeleted));
     }
 
     public List<ProductResponseDto> searchProducts(String name, UUID companyId) throws HubException {
@@ -135,7 +144,10 @@ public class ProductService {
     @Transactional
     @KafkaListener(topics = "product-deleted", groupId = "group_Product")
     public void consumeFromProduct(String message) {
-        ProductResponseDto event = EventSerializer.deserialize(message, ProductResponseDto.class);
+        // 메시지를 ProductDeleted 객체로 역직렬화
+        ProductDeleted event = EventSerializer.deserialize(message, ProductDeleted.class);
+
+        // 역직렬화된 객체 사용
         log.info("@@@ {}", event.getProductId());
     }
 }
