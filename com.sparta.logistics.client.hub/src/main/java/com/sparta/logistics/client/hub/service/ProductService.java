@@ -7,11 +7,14 @@ import com.sparta.logistics.client.hub.dto.ProductResponseDto;
 import com.sparta.logistics.client.hub.model.Company;
 import com.sparta.logistics.client.hub.model.Product;
 import com.sparta.logistics.client.hub.repository.ProductRepository;
+import com.sparta.logistics.common.model.EventSerializer;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,7 @@ public class ProductService {
     private final HubService hubService;
     private final CompanyService companyService;
     private final ProductRepository productRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Transactional
     public ProductResponseDto createProduct(ProductRequestDto requestDto) throws HubException {
@@ -82,6 +86,9 @@ public class ProductService {
 
         product.softDelete();
         productRepository.save(product);
+
+        // 상품 삭제 이벤트 발행
+        kafkaTemplate.send("product-deleted", EventSerializer.serialize(ProductResponseDto.of(product)));
     }
 
     public List<ProductResponseDto> searchProducts(String name, UUID companyId) throws HubException {
@@ -122,5 +129,13 @@ public class ProductService {
         productRepository.save(product);
         log.info("Quantity decreased for product: {}. New quantity: {}", productId, product.getQuantity());
         return ProductResponseDto.of(product);
+    }
+
+    // 테스트용 kafka
+    @Transactional
+    @KafkaListener(topics = "product-deleted", groupId = "group_Product")
+    public void consumeFromProduct(String message) {
+        ProductResponseDto event = EventSerializer.deserialize(message, ProductResponseDto.class);
+        log.info("@@@ {}", event.getProductId());
     }
 }
