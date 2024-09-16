@@ -51,7 +51,7 @@ public class JWTUtil {
                 .compact();
 
         addJwtToCookie(token, response);
-
+        removeJSessionIdCookie(response);
         return token;
     }
 
@@ -108,5 +108,11 @@ public class JWTUtil {
                 .verifyWith(secretKey)
                 .build().parseSignedClaims(jwt).getPayload();
 
+    }
+    public void removeJSessionIdCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("JSESSIONID", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);  // 만료 시간 0으로 설정하여 쿠키 삭제
+        response.addCookie(cookie);
     }
 }
