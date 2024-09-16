@@ -113,7 +113,7 @@ public class ProductService {
     @Transactional
     public ProductResponseDto increaseQuantity(UUID productId, int quantity) throws HubException {
         log.info("Increasing quantity for product: {} by {}", productId, quantity);
-        Product product = productRepository.findById(productId)
+        Product product = productRepository.findByProductId(productId)
                 .orElseThrow(() -> new HubException(ApiResultError.PRODUCT_NO_EXIST));
 
         product.setQuantity(product.getQuantity() + quantity);
@@ -122,6 +122,22 @@ public class ProductService {
         log.info("{}의 수량을 증가시킵니다. {} -> {}", product.getName(), product.getQuantity(), product.getQuantity() + quantity);
         return ProductResponseDto.of(product);
     }
+
+//    @Transactional
+//    @KafkaListener(topics = "order-canceled", groupId = "product-service")
+//    // TODO : 주문 취소시 "order-canceled" 이벤트 구독중, 상품 수량 원복 필요 (productId, quantity)
+//    public ProductResponseDto increaseQuantity(String message) throws HubException{
+//        // 메시지를 ProductDeleted 객체로 역직렬화
+//        ProductDeleted event = EventSerializer.deserialize(message, ProductDeleted.class);
+//
+//            Product product = productRepository.findByProductId(event.getProductId())
+//                    .orElseThrow(() -> new HubException(ApiResultError.PRODUCT_NO_EXIST));
+//
+//            int newQuantity = product.getQuantity() + event.getQuantity();
+//            product.setQuantity(newQuantity);
+//            productRepository.save(product);
+//        return null;
+//    }
 
     @Transactional
     public ProductResponseDto decreaseQuantity(UUID productId, int quantity) throws HubException {
@@ -142,7 +158,7 @@ public class ProductService {
 
     // 테스트용 kafka
     @Transactional
-    @KafkaListener(topics = "product-deleted", groupId = "group_Product")
+    @KafkaListener(topics = "product-deleted", groupId = "product-service")
     public void consumeFromProduct(String message) {
         // 메시지를 ProductDeleted 객체로 역직렬화
         ProductDeleted event = EventSerializer.deserialize(message, ProductDeleted.class);
