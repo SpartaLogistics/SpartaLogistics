@@ -1,9 +1,7 @@
-package com.sparta.logistics.client.auth.application.util;
+package com.sparta.logistics.client.auth.application.security;
 
 import com.sparta.logistics.client.auth.domain.model.RoleType;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.util.Date;
 
@@ -22,7 +19,6 @@ import java.util.Date;
 @Slf4j
 @RequiredArgsConstructor
 public class JWTUtil {
-
     private final SecretKey secretKey;
     // Header KEY 값
     private static final String AUTHORIZATION_HEADER = "Authorization";

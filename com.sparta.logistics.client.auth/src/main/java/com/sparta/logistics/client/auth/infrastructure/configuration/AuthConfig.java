@@ -1,7 +1,6 @@
 package com.sparta.logistics.client.auth.infrastructure.configuration;
 
 
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +13,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class AuthConfig {
+    private static final String[] RESOURCE_WHITELIST = {
+            "/v3/**", // v3 : SpringBoot 3(없으면 swagger 예시 api 목록 제공)
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/webjars/**",
+    };
 
     // SecurityFilterChain 빈을 정의합니다. 이 메서드는 Spring Security의 보안 필터 체인을 구성합니다.
     @Bean
@@ -26,7 +31,11 @@ public class AuthConfig {
                         // /auth/signIn 경로에 대한 접근을 허용합니다. 이 경로는 인증 없이 접근할 수 있습니다.
                         .requestMatchers("/auth/signin").permitAll()
                         .requestMatchers("/auth/signup").permitAll()
-                                .requestMatchers("/users/").permitAll()
+                                .requestMatchers(RESOURCE_WHITELIST).permitAll()
+                                .requestMatchers("/users/**").permitAll()
+                                .requestMatchers("/users").permitAll()
+                                .requestMatchers("/users/auth/**").permitAll()
+
 //                        .requestMatchers("/users").permitAll()
                         // 그 외의 모든 요청은 인증이 필요합니다.
                         .anyRequest().authenticated()
