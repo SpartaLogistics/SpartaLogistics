@@ -1,26 +1,25 @@
 global:
   scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'spring-boot'
+  - job_name: 'spring-boot-applications'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: [ 'host.docker.internal:19095' ]
+      - targets:
+          - 'host.docker.internal:19090'  # Eureka 서버
+          - 'host.docker.internal:19091'  # Gateway
+          - 'host.docker.internal:19092'  # Auth
+          - 'host.docker.internal:19093'  # User
+          - 'host.docker.internal:19094'  # AI
+          - 'host.docker.internal:19095'  # Hub
+          - 'host.docker.internal:19096'  # Order
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        regex: 'host.docker.internal:(.*)'
+        target_label: instance
+        replacement: '${1}'
 
-#global:
-#  scrape_interval: 15s
-#  evaluation_interval: 15s
-#
-#scrape_configs:
-#  - job_name: 'spring-boot-applications'
-#    metrics_path: '/actuator/prometheus'
-#    scrape_interval: 5s
-#    static_configs:
-#      - targets:
-#          - 'gateway:19091'  # Gateway
-#          - 'auth:19092'     # Auth
-#          - 'user:19093'     # User
-#          - 'ai:19094'       # AI
-#          - 'hub:19095'      # Hub
-#          - 'order:19096'    # Order
-#          - 'config:19097'   # Config
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ 'localhost:9090' ]
