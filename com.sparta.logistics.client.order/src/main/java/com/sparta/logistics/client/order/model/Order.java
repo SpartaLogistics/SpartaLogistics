@@ -1,6 +1,7 @@
 package com.sparta.logistics.client.order.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sparta.logistics.client.order.dto.OrderRequestDto;
 import com.sparta.logistics.client.order.common.type.OrderStatus;
 
@@ -11,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,8 +43,9 @@ public class Order extends Timestamped {
 
     private String remark;
 
-    @OneToMany(mappedBy = "order")
-    private List<OrderProduct> orderProducts;
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<OrderProduct> orderProducts = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -76,5 +79,11 @@ public class Order extends Timestamped {
         this.status = orderDto.getStatus() != null ? orderDto.getStatus() : order.getStatus();
     }
 
+    @Builder(builderClassName = "OrderDeleteBuilder", builderMethodName = "OrderDeleteBuilder")
+    public Order(UUID orderId, OrderStatus orderStatus) {
+        this.orderId = orderId;
+        this.status = orderStatus;
+        this.isDeleted = false;
+    }
 
 }

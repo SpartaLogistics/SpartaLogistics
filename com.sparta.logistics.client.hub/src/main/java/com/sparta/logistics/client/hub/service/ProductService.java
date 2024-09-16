@@ -26,7 +26,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ProductService {
+public class
+ProductService {
 
     private final HubService hubService;
     private final CompanyService companyService;

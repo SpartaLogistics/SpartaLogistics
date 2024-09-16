@@ -170,5 +170,35 @@ public class ApiResult extends HashMap<String, Object>{
     }
 
 
+    public <T> T getResultDataAs(Class<T> clazz) {
+        Object data = super.get(AR_KEY_RESULT_DATA);
+        if (data == null) {
+            return null;
+        }
+
+        // ObjectMapper를 사용하여 JSON 형태로 변환 후 원하는 클래스 타입으로 역직렬화
+        return objectMapper.convertValue(data, clazz);
+    }
+
+    // 데이터를 List<T>로 변환
+    public <T> List<T> getListAs(Class<T> clazz) {
+        Object data = super.get(AR_KEY_LIST);
+        if (data == null) {
+            return null;
+        }
+
+        // ObjectMapper를 사용하여 Object를 List<T>로 변환
+        return objectMapper.convertValue(data, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+    }
+
+    public <T> List<T> getResultDataAsList(Class<T> clazz) {
+        Object data = getResultData();
+        if (data == null) {
+            return null;
+        }
+
+        // Using ObjectMapper to convert Object to List<T>
+        return objectMapper.convertValue(data, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+    }
 
 }
