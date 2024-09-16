@@ -1,17 +1,17 @@
 package com.sparta.logistics.client.user.controller;
 
 import com.sparta.logistics.client.user.common.exception.UserException;
+import com.sparta.logistics.client.user.dto.UserRequest;
+import com.sparta.logistics.client.user.model.UserVO;
 import com.sparta.logistics.client.user.model.validation.UserValid0001;
 import com.sparta.logistics.client.user.service.UserService;
-import com.sparta.logistics.client.user.model.UserVO;
-import com.sparta.logistics.client.user.dto.UserRequest;
 import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
+import com.sparta.logistics.common.model.RoleCheck;
 import com.sparta.logistics.common.type.ApiResultError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -41,16 +41,20 @@ public class UserController extends CustomApiController {
     }
     @Operation(summary = "로그인시 유저 검색", description = "로그인 유저 검색")
     @GetMapping("/auth/{username}")
-    public ApiResult findByUsername(@PathVariable String username) {
+    public UserVO findByUsername(@PathVariable String username) {
+        System.out.println("Requested Username: " + username);
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try{
             UserVO user = userService.findByUsername(username);
+            System.out.println("Found User: " + user);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(user);
+            return user;
         } catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
         }
-        return apiResult;
+        return null;
     }
+    @RoleCheck("CUSTOMER")
     @Operation(summary = "userId로 유저 검색", description = "userId로 유저 검색")
     @GetMapping("/{userId}")
     public ApiResult getUserInfo(@PathVariable Long userId) {

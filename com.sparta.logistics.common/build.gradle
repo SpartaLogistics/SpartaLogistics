@@ -15,6 +15,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url "https://repo.spring.io/release" }
 }
 
 bootJar {
@@ -24,6 +25,11 @@ bootJar {
 jar {
     enabled = true
 }
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2021.0.7"
+    }
+}
 
 dependencies {
     // queryDSL
@@ -31,7 +37,8 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'

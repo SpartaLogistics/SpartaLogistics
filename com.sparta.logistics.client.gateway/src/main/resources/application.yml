@@ -13,6 +13,7 @@ spring:
           uri: lb://user-service  # 'order-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:
             - Path=/users/**  # /order/** 경로로 들어오는 요청을 이 라우트로 처리
+#            - Path=/delivery_managers/**
         - id: ai-service  # 라우트 식별자
           uri: lb://ai-service  # 'product-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:
@@ -32,7 +33,14 @@ spring:
       discovery:
         locator:
           enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
-
+#springdoc:
+#  swagger-ui:
+#    path: /swagger-ui/index.html
+#  group-configs:
+#    - group: user-service
+#      paths-to-match: /users/**
+#    - group: hub-service
+#      paths-to-match: /hubs/**
 eureka:
   client:
     service-url:
@@ -40,4 +48,5 @@ eureka:
 
 service:
   jwt:
+    access-expiration: 3600000
     secret-key: "3d9d5abb6494559eab91a0fd6b0bcd64806d1718de3e06bfcde2f0cfa98673efb893fad45f21ce98e43ced1106b0bca7a6b9f6054e84d54d4613240d8b8f90ae"

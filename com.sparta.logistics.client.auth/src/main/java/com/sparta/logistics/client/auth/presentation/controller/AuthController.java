@@ -2,7 +2,7 @@ package com.sparta.logistics.client.auth.presentation.controller;
 
 
 import com.sparta.logistics.client.auth.application.service.AuthService;
-import com.sparta.logistics.client.auth.application.util.JWTUtil;
+import com.sparta.logistics.client.auth.application.security.JWTUtil;
 import com.sparta.logistics.client.auth.domain.model.UserVO;
 import com.sparta.logistics.client.auth.presentation.request.SignInRequest;
 import com.sparta.logistics.client.auth.presentation.request.UserRequest;
@@ -13,10 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigInteger;
 
 @Slf4j
 @RestController
