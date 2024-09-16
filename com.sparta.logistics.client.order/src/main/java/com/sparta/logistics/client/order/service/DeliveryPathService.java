@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,5 +64,22 @@ public class DeliveryPathService {
         return DeliveryPathResponseDto.of(deliveryPathRepository.save(deliveryPath));
     }
 
+    public void deleteAllDeliveryPaths(Delivery delivery) throws OrderProcException {
+        List<DeliveryPath> deliveryPathList = deliveryPathRepository.findAllByDeliveryAndIsDeletedFalse(delivery);
+        for (DeliveryPath deliveryPath : deliveryPathList) {
+            UUID deliveryPathId = deliveryPath.getDeliveryPathId();
+            this.deleteDeliveryPath(deliveryPathId);
+        }
+    }
+
+    public List<DeliveryPathResponseDto> createDeliveryPaths(UUID deliveryId, List<DeliveryPathRequestDto> deliveryPathRequestDtos) throws OrderProcException {
+        List<DeliveryPathResponseDto> newDeliveryPaths = new ArrayList<>();
+        for(DeliveryPathRequestDto deliveryPathRequestDto : deliveryPathRequestDtos){
+            deliveryPathRequestDto.setDeliveryId(deliveryId);
+            newDeliveryPaths.add(this.createDeliveryPath(deliveryPathRequestDto));
+        }
+
+        return newDeliveryPaths;
+    }
 
 }

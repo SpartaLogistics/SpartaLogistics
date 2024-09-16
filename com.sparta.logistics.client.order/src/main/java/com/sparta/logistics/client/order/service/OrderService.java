@@ -1,16 +1,19 @@
 package com.sparta.logistics.client.order.service;
 
 import com.sparta.logistics.client.order.common.exception.OrderProcException;
+import com.sparta.logistics.client.order.common.type.OrderStatus;
 import com.sparta.logistics.client.order.dto.OrderRequestDto;
 import com.sparta.logistics.client.order.dto.OrderResponseDto;
 import com.sparta.logistics.client.order.dto.OrderSearchDto;
 import com.sparta.logistics.client.order.model.Order;
 import com.sparta.logistics.client.order.repository.OrderRepository;
 import com.sparta.logistics.common.type.ApiResultError;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -21,8 +24,10 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     // 주문 생성
+    @Transactional
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto) throws OrderProcException {
         // TODO 데이터 검증
         // 1. 발송처 확인
@@ -53,16 +58,24 @@ public class OrderService {
     }
 
     // 주문 삭제
-    public OrderResponseDto deleteOrder(UUID orderId) throws OrderProcException {
+    @Transactional
+    public OrderResponseDto deleteOrder(UUID orderId, OrderStatus orderStatus) throws OrderProcException {
         // 주문 확인
         Order order = orderRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow( ()->
             // 주문이 존재하지 않습니다.
             new OrderProcException(ApiResultError.ORDER_NO_EXIST)
         );
-        order.softDelete();
-        return OrderResponseDto.of(orderRepository.save(order));
+
+        Order deleteOrder = Order.OrderDeleteBuilder()
+                .orderId(orderId)
+                .orderStatus(orderStatus)
+                .build();
+
+
+        return OrderResponseDto.of(orderRepository.save(deleteOrder));
     }
 
+    @Transactional
     public OrderResponseDto updateOrder(OrderRequestDto orderRequestDto) throws OrderProcException {
         UUID orderId = orderRequestDto.getOrderId();
         // 주문 확인
@@ -77,7 +90,12 @@ public class OrderService {
                 .build();
         return OrderResponseDto.of(orderRepository.save(updatedOrder));
 
-
     }
+
+    public OrderResponseDto getOrderWithOrderProducts(UUID orderId) {
+        return orderRepository.findByOrderIdWithOrderProducts(orderId);
+    }
+
+
 
 }

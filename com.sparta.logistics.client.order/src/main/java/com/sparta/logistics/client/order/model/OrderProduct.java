@@ -1,6 +1,7 @@
 package com.sparta.logistics.client.order.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sparta.logistics.client.order.dto.OrderProductRequestDto;
 import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
@@ -38,6 +39,7 @@ public class OrderProduct extends Timestamped {
 
     @ManyToOne
     @JoinColumn(name = "order_id", insertable = false, updatable = false)
+    @JsonBackReference
     private Order order;
 
     public void softDelete() {

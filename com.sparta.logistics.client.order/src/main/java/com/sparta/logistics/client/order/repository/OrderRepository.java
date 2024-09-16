@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface OrderRepository extends JpaRepository<Order, UUID> {
+public interface OrderRepository extends JpaRepository<Order, UUID>, OrderRepositoryCustom {
 
     Optional<Order> findByOrderIdAndIsDeletedFalse(UUID orderId);
     Page<Order> findAllByIsDeletedFalse(Pageable pageable);

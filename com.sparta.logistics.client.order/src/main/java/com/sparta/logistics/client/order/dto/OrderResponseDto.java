@@ -1,8 +1,9 @@
 package com.sparta.logistics.client.order.dto;
 
 import com.sparta.logistics.client.order.common.type.OrderStatus;
-import com.sparta.logistics.client.order.model.Delivery;
+import com.sparta.logistics.client.order.model.DeliveryPath;
 import com.sparta.logistics.client.order.model.Order;
+import com.sparta.logistics.client.order.model.OrderProduct;
 import lombok.Builder;
 import lombok.Data;
 
@@ -23,10 +24,8 @@ public class OrderResponseDto {
     private String remark;
 
     private DeliveryResponseDto delivery;
-    private List<OrderProductResponseDto> products = new ArrayList<>();
-
-    //private String senderNm;        // 발송처
-    //private String receiverNm;      // 도착처
+    private List<OrderProduct> products = new ArrayList<>();
+    private List<DeliveryPath> deliveryPaths = new ArrayList<>();
 
     public static OrderResponseDto of(Order order) {
         return OrderResponseDto.builder()
@@ -37,6 +36,7 @@ public class OrderResponseDto {
                 .status(order.getStatus())
                 .isDeleted(order.isDeleted())
                 .remark(order.getRemark())
+                .products(order.getOrderProducts())
                 .build();
     }
 }

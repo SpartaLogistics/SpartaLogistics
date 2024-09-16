@@ -1,7 +1,8 @@
 package com.sparta.logistics.client.order.service;
 
 import com.sparta.logistics.client.order.common.exception.OrderProcException;
-import com.sparta.logistics.client.order.dto.OrderProductRequestDto;
+import com.sparta.logistics.client.order.dto.*;
+import com.sparta.logistics.client.order.model.Order;
 import com.sparta.logistics.client.order.model.OrderProduct;
 import com.sparta.logistics.client.order.repository.OrderProductRepository;
 import com.sparta.logistics.common.type.ApiResultError;
@@ -20,14 +21,24 @@ public class OrderProductService {
 
     private final OrderProductRepository orderProductRepository;
 
-    public List<OrderProduct> findByOrderId(UUID orderId) throws OrderProcException {
-        return orderProductRepository.findByOrderId(orderId);
+    public List<OrderProductResponseDto> findByOrderId(UUID orderId) throws OrderProcException {
+        return orderProductRepository.findByOrderId(orderId).stream()
+                .map(OrderProductResponseDto::of)
+                .toList();
     }
 
     public OrderProduct create(OrderProduct orderProduct) {
         // TODO product 존재여부, 수량, 상태 확인
 
         return orderProductRepository.save(orderProduct);
+    }
+
+    public OrderProductResponseDto create(UUID orderId, OrderProductRequestDto orderRequestDto) throws OrderProcException {
+        OrderProduct orderProduct = OrderProduct.OrderProductCreateBuilder()
+                .orderId(orderId)
+                .orderProductRequestDto(orderRequestDto)
+                .build();
+        return OrderProductResponseDto.of(this.create(orderProduct));
     }
 
     public List<OrderProduct> createOrderProducts(UUID orderId, List<OrderProductRequestDto> orderProducts) {
@@ -90,6 +101,24 @@ public class OrderProductService {
                 .build();
 
         return orderProductRepository.save(newOrderProduct);
+    }
+
+    // 삭제 후 재저장
+    public List<OrderProductResponseDto> deleteAndCreateProducts(UUID orderId, List<OrderProductRequestDto> newProducts) throws OrderProcException {
+        // 삭제 처리
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
+        for(OrderProduct orderProduct : orderProducts) {
+            orderProduct.softDelete();
+            orderProductRepository.save(orderProduct);
+        }
+
+        // 재저장
+        List<OrderProductResponseDto> retList = new ArrayList<>();
+        for(OrderProductRequestDto newOrderProduct : newProducts) {
+            retList.add(this.create(orderId, newOrderProduct));
+        }
+
+        return retList;
     }
 
 }
