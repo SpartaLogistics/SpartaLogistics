@@ -12,8 +12,15 @@ spring:
         - id: user-service  # 라우트 식별자
           uri: lb://user-service  # 'order-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:
-            - Path=/users/**  # /order/** 경로로 들어오는 요청을 이 라우트로 처리
-#            - Path=/delivery_managers/**
+            - Path=/users/**
+        - id: user-service  # 라우트 식별자
+          uri: lb://user-service  # 'order-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
+          predicates:
+            - Path=/delivery_managers/**
+        - id: user-service  # 라우트 식별자
+          uri: lb://user-service  # 'order-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
+          predicates:
+            - Path=/messages/**
         - id: ai-service  # 라우트 식별자
           uri: lb://ai-service  # 'product-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:
@@ -35,19 +42,10 @@ spring:
       discovery:
         locator:
           enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
-#springdoc:
-#  swagger-ui:
-#    path: /swagger-ui/index.html
-#  group-configs:
-#    - group: user-service
-#      paths-to-match: /users/**
-#    - group: hub-service
-#      paths-to-match: /hubs/**
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/  # Eureka 서버의 URL을 지정
-
 service:
   jwt:
     access-expiration: 3600000

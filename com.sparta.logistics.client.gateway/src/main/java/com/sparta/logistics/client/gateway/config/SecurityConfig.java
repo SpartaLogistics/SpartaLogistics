@@ -27,6 +27,12 @@ import java.util.Base64;
 public class SecurityConfig {
     @Value("${service.jwt.secret-key}") // Base64 Encode 한 SecretKey
     private String secretKeyString;
+    private static final String[] RESOURCE_WHITELIST = {
+            "/v3/**", // v3 : SpringBoot 3(없으면 swagger 예시 api 목록 제공)
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/webjars/**",
+    };
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
@@ -56,31 +62,18 @@ public class SecurityConfig {
                 try {
                     byte[] bytes = Base64.getDecoder().decode(secretKeyString);
                     var secretKey = Keys.hmacShaKeyFor(bytes);
-                    log.info("k");
                     Claims claims = Jwts.parser()
                             .verifyWith(secretKey)
                             .build()
                             .parseSignedClaims(token)
                             .getPayload();
-                    log.info("s");
                     String username = claims.get("username", String.class);
                     String Role = claims.get("role", String.class);
+                    Long userId = claims.get("user_id", Long.class);
 
-//                    var userDto =
-//                            Optional.ofNullable(
-//                                            redisService.getValueAsClass("user:" + username, UserDto.class)
-//                                    )
-//                                    .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found")
-//                                    );
-
-
-                    // 사용자 정보를 새로운 헤더에 추가
-//                    ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
-//                            .header("X-User-Name", username)  // 사용자명 헤더 추가
-//                            .header("X-User-Roles", String.join(",", userDto.getRoles()))    // 권한 정보 헤더 추가
-//                            .build();
                     ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
-                            .header("X-User-Name", username)  // 사용자명 헤더 추가
+                            .header("X-User-Name", username)
+                            .header("X-User-Id", String.valueOf(userId))// 사용자명 헤더 추가
                             .header("X-User-Roles", Role)  // 권한 정보를 claims에서 직접 가져옵니다
                             .build();
 
