@@ -54,7 +54,7 @@ public class UserController extends CustomApiController {
         }
         return null;
     }
-    @RoleCheck("CUSTOMER")
+    @RoleCheck(roles = {"CUSTOMER", "MASTER"})
     @Operation(summary = "userId로 유저 검색", description = "userId로 유저 검색")
     @GetMapping("/{userId}")
     public ApiResult getUserInfo(@PathVariable Long userId) {
