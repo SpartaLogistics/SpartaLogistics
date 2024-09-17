@@ -11,7 +11,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class AuditConfig {
 
     @Bean
-    public AuditorAware<Long> auditorProvider(HttpServletRequest request, JwtTokenProvider jwtTokenProvider) {
-        return new AuditorAwareImpl(request, jwtTokenProvider);
+    public AuditorAware<Long> auditorProvider(HttpServletRequest request) {
+        return new AuditorAwareImpl(request);
     }
 }
+
