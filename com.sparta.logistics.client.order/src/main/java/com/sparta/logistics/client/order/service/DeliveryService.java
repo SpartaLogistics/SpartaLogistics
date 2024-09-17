@@ -49,13 +49,22 @@ public class DeliveryService {
         return DeliveryResponseDto.of(deliveryRepository.save(delivery));
     }
 
-    public DeliveryResponseDto deleteDelivery(UUID deliveryId) throws OrderProcException {
+    public void deleteDelivery(UUID deliveryId) throws OrderProcException {
         Delivery delivery = deliveryRepository.findByDeliveryIdAndIsDeletedFalse(deliveryId).orElseThrow(()->
                 new OrderProcException(ApiResultError.DELIVERY_NO_EXIST)
         );
         // TODO 삭제: 마스터 관리자, 해당 허브 관리자, 그리고 해당 배송 담당자만
         delivery.softDelete();
-        return DeliveryResponseDto.of(delivery);
+        deliveryRepository.save(delivery);
+    }
+
+    public DeliveryResponseDto deleteDeliveryByOrderId(UUID orderId) throws OrderProcException {
+        Delivery delivery = deliveryRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow(()->
+                new OrderProcException(ApiResultError.DELIVERY_NO_EXIST)
+        );
+        // TODO 삭제: 마스터 관리자, 해당 허브 관리자, 그리고 해당 배송 담당자만
+        delivery.softDelete();
+        return DeliveryResponseDto.of(deliveryRepository.save(delivery));
     }
 
 

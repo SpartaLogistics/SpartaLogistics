@@ -1,10 +1,12 @@
 package com.sparta.logistics.client.order.client.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.util.UUID;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HubPathResponseDto {
 
     private UUID hubPathId; // 허브 이동 경로 ID
@@ -16,4 +18,5 @@ public class HubPathResponseDto {
     private String nextHubAddress;
 
     private Long duration; // 소요 시간
+
 }

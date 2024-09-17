@@ -41,19 +41,19 @@ public class OrderProductService {
         return OrderProductResponseDto.of(this.create(orderProduct));
     }
 
-    public List<OrderProduct> createOrderProducts(UUID orderId, List<OrderProductRequestDto> orderProducts) {
-        List<OrderProduct> newOrderProducts = new ArrayList<>();
-
+    public List<OrderProductResponseDto> createOrderProducts(UUID orderId, List<OrderProductRequestDto> orderProducts) {
+        List<OrderProduct> orderProductList = new ArrayList<>();
         for(OrderProductRequestDto orderProductRequestDto : orderProducts) {
             OrderProduct orderProduct = OrderProduct.OrderProductCreateBuilder()
                             .orderId(orderId)
                             .orderProductRequestDto(orderProductRequestDto)
                             .build();
-
-            newOrderProducts.add(this.create(orderProduct));
+            orderProductList.add(orderProduct);
         }
 
-        return newOrderProducts;
+        return orderProductRepository.saveAll(orderProductList).stream()
+                .map(OrderProductResponseDto::of)
+                .toList();
     }
 
     // 기존에 저장된 주문 품목을 삭제처리하고 새로 저장
@@ -121,4 +121,8 @@ public class OrderProductService {
         return retList;
     }
 
+    // productId로 찾기
+    public List<UUID> findDistinctOrderIdsByProductId(UUID productId) {
+        return orderProductRepository.findDistinctOrderIdsByProductId(productId);
+    }
 }

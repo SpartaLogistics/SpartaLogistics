@@ -5,10 +5,7 @@ import com.sparta.logistics.client.order.common.type.DeliveryStatus;
 import com.sparta.logistics.client.order.dto.DeliveryPathRequestDto;
 import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -18,6 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class DeliveryPath extends Timestamped {
 
     @Id
@@ -39,7 +37,7 @@ public class DeliveryPath extends Timestamped {
     @Column(name = "departure_id", nullable = false)
     private UUID departureId;
 
-    @Column(name = "arrival_id", nullable = false)
+    @Column(name = "arrival_id")
     private UUID arrivalId;
 
     private Long expectedDistance;

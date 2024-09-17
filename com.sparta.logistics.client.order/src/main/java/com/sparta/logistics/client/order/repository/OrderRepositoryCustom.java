@@ -2,6 +2,7 @@ package com.sparta.logistics.client.order.repository;
 
 import com.sparta.logistics.client.order.dto.OrderRequestDto;
 import com.sparta.logistics.client.order.dto.OrderResponseDto;
+import com.sparta.logistics.client.order.dto.OrderSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,4 +14,5 @@ public interface OrderRepositoryCustom {
     //Page<OrderResponseDto> findByOrderId(Pageable pageable);
 
     // Order List
+    Page<OrderResponseDto> searchOrders(OrderSearchCriteria orderSearchCriteria, Pageable pageable);
 }

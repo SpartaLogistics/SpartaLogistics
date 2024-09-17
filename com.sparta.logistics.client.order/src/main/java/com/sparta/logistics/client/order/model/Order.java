@@ -7,10 +7,7 @@ import com.sparta.logistics.client.order.common.type.OrderStatus;
 
 import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +19,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Order extends Timestamped {
 
     @Id
@@ -79,11 +77,17 @@ public class Order extends Timestamped {
         this.status = orderDto.getStatus() != null ? orderDto.getStatus() : order.getStatus();
     }
 
-    @Builder(builderClassName = "OrderDeleteBuilder", builderMethodName = "OrderDeleteBuilder")
-    public Order(UUID orderId, OrderStatus orderStatus) {
-        this.orderId = orderId;
+    @Builder(builderClassName = "OrderUpdateStatusBuilder", builderMethodName = "OrderUpdateStatusBuilder")
+    public Order(Order order, OrderStatus orderStatus, boolean isDeleted) {
+        this.orderId = order.getOrderId();
+        this.senderId = order.getSenderId();
+        this.receiverId = order.getReceiverId();
+        this.deliveryId = order.getDeliveryId();
+        this.remark = order.getRemark();
         this.status = orderStatus;
-        this.isDeleted = false;
+        this.isDeleted = isDeleted;
     }
+
+
 
 }

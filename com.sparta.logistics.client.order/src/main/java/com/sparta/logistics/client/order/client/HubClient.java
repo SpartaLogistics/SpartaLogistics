@@ -50,8 +50,8 @@ public interface HubClient {
      * @param quantity
      * @return
      */
-    @PatchMapping("/external/decrease/{productId}")
-    ApiResult externalDecreaseQuantity(@PathVariable UUID productId, @RequestParam int quantity);
+    @PatchMapping("/products/external/decrease/{productId}")
+    ApiResult externalDecreaseQuantity(@PathVariable("productId") UUID productId, @RequestParam int quantity);
 
     /**
      * 상품 수량 업데이트(증가)
@@ -59,8 +59,8 @@ public interface HubClient {
      * @param quantity
      * @return
      */
-    @PatchMapping("/external/increase/{productId}")
-    public ApiResult increaseQuantity(@PathVariable UUID productId, @RequestParam int quantity);
+    @PatchMapping("/products/external/increase/{productId}")
+    public ApiResult increaseQuantity(@PathVariable("productId") UUID productId, @RequestParam int quantity);
 
 
 }

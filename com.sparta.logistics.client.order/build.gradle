@@ -42,6 +42,7 @@ dependencies {
 
 	// open Feign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation 'io.github.openfeign:feign-hc5:13.3'
 
 	// jackson
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'

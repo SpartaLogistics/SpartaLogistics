@@ -1,13 +1,17 @@
 package com.sparta.logistics.client.order.dto;
 
 import com.sparta.logistics.client.order.model.OrderProduct;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderProductResponseDto {
 
     private UUID orderId;

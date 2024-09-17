@@ -2,6 +2,7 @@ package com.sparta.logistics.client.order.dto;
 
 import com.sparta.logistics.client.order.common.type.OrderStatus;
 import com.sparta.logistics.client.order.model.validation.OrderValid0001;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -29,9 +30,9 @@ public class OrderRequestDto {
     private OrderStatus status;
 
     // 배송 정보
-//    @Valid
-//    @NotNull(groups = {OrderValid0001.class},
-//            message = "배송 정보가 누락되었습니다,")
+    @Valid
+    @NotNull(groups = {OrderValid0001.class},
+            message = "배송 정보가 누락되었습니다,")
     private DeliveryRequestDto deliveryInfo;
 
     // 주문 품목

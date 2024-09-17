@@ -27,12 +27,25 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  cloud:
+    openfeign:
+      httpclient:
+        hc5:
+          enabled: true
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:19090/eureka/
 
-
 server:
   port: 19096
+
+logging:
+  level:
+    root: INFO
+    com.sparta: DEBUG
+    org.apache.kafka.clients: INFO
+    feign: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
+

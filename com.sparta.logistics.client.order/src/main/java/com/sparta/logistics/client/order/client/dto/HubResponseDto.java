@@ -1,11 +1,13 @@
 package com.sparta.logistics.client.order.client.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HubResponseDto {
 
     private UUID hubId;           // 허브 ID

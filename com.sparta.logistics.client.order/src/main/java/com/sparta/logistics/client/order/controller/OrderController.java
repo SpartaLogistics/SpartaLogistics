@@ -1,8 +1,10 @@
 package com.sparta.logistics.client.order.controller;
 
 import com.sparta.logistics.client.order.common.exception.OrderProcException;
+import com.sparta.logistics.client.order.common.type.OrderStatus;
 import com.sparta.logistics.client.order.dto.OrderRequestDto;
 import com.sparta.logistics.client.order.dto.OrderResponseDto;
+import com.sparta.logistics.client.order.dto.OrderSearchCriteria;
 import com.sparta.logistics.client.order.dto.OrderSearchDto;
 import com.sparta.logistics.client.order.service.OrderProcService;
 import com.sparta.logistics.client.order.service.OrderService;
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -49,8 +52,8 @@ public class OrderController extends CustomApiController {
         }
 
         try {
-            orderProcService.createOrder(orderRequestDto);
-            apiResult.set(ApiResultError.NO_ERROR);
+            OrderResponseDto order = orderProcService.createOrder(orderRequestDto);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(order);
 
         } catch(OrderProcException e) {
             apiResult.set(e.getCode());
@@ -69,9 +72,8 @@ public class OrderController extends CustomApiController {
     public ApiResult deleteOrder(@PathVariable("id") UUID orderId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
 
-        // TODO orderProcService 로 교체
         try {
-            orderProcService.deleteOrder(orderId);
+            orderProcService.deleteOrder(orderId, OrderStatus.ORDER_CANCELED);
             apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
         } catch (OrderProcException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -82,18 +84,17 @@ public class OrderController extends CustomApiController {
 
     /**
      * 주문 목록 조회(삭제건 제외)
-     * @param orderSearchDto
+     * @param orderSearchCriteria
      * @return
      */
 
     @Operation(summary = "주문 목록 조회", description = "주문 목록 조회")
-    @GetMapping
-    public ApiResult getAllOrders(OrderSearchDto orderSearchDto) {
+    @GetMapping("/list")
+    public ApiResult getAllOrders(OrderSearchCriteria orderSearchCriteria,
+                                  @PageableDefault Pageable pageable) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-        // 임시
-        Pageable pageable = PageRequest.of(0, 20);
 
-        Page<Order> orderList = orderService.getOrderList(orderSearchDto, pageable);
+        Page<OrderResponseDto> orderList = orderService.searchOrders(orderSearchCriteria, pageable);
         apiResult.set(ApiResultError.NO_ERROR).setList(orderList).setPageInfo(orderList);
 
         return apiResult;
@@ -122,7 +123,6 @@ public class OrderController extends CustomApiController {
      * @param orderRequestDto
      * @return
      */
-
     @Operation(summary = "주문 수정", description = "주문 수정")
     @PatchMapping
     public ApiResult updateOrder(@RequestBody OrderRequestDto orderRequestDto) {
@@ -137,6 +137,7 @@ public class OrderController extends CustomApiController {
 
         return apiResult;
     }
+
 
 
 }
