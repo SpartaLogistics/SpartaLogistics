@@ -33,16 +33,15 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         QOrder qOrder = QOrder.order;
         QOrderProduct qOrderProduct = QOrderProduct.orderProduct;
 
-//        Order order = jpaQueryFactory
-//                .selectFrom(qOrder)
-//                .leftJoin(qOrder.orderProducts, qOrderProduct)
-//                .where(qOrder.orderId.eq(orderId)
-//                        .and(qOrder.isDeleted.eq(false)))
-//                .fetchOne();
-//
-//        return OrderResponseDto.of(order);
+        Order order = jpaQueryFactory
+                .selectFrom(qOrder)
+                .leftJoin(qOrder.orderProducts, qOrderProduct)
+                .where(qOrder.orderId.eq(orderId)
+                        .and(qOrder.isDeleted.eq(false)))
+                .fetchOne();
 
-        return null;
+        return OrderResponseDto.of(order);
+
     }
 
     // 검색 및 페이징 메서드
