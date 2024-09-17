@@ -12,10 +12,11 @@ import com.sparta.logistics.common.type.ApiResultError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+@Slf4j
 @RestController
 @RequestMapping("/users")
 @Tag(name = "User 요청 API", description = "User 요청 내역 관리 목적의 API Docs")
@@ -57,8 +58,9 @@ public class UserController extends CustomApiController {
     @RoleCheck(roles = {"CUSTOMER", "MASTER"})
     @Operation(summary = "userId로 유저 검색", description = "userId로 유저 검색")
     @GetMapping("/{userId}")
-    public ApiResult getUserInfo(@PathVariable Long userId) {
+    public ApiResult getUserInfo(@PathVariable Long userId, @RequestHeader("X-User-Name") String username) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        log.info(username);
         try{
             UserVO user = userService.getUserInfo(userId);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(user);

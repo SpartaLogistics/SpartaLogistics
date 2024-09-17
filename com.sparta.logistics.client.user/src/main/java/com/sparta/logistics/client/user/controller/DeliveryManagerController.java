@@ -12,7 +12,7 @@ import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,26 +23,28 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/delivery_managers")
 @RequiredArgsConstructor
+@Slf4j
 public class DeliveryManagerController extends CustomApiController {
     private final DeliveryManagerService deliveryManagerService;
     private final UserRepository userRepository;
 
-//    @PostMapping
-//    public ApiResult createDeliveryManager(@RequestBody @Validated({DeliveryManagerValid0001.class}) ManagerRequestDto requestDto, @AuthenticationPrincipal SecurityUserDetails userDetails, Errors errors) {
-//        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-//        if(errors.hasErrors()) {
-//            return bindError(errors, apiResult);
-//        }
-//        try{
-//            User user = userRepository.findById(userDetails.getId())
-//                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//            DeliveryManagerResponse response = deliveryManagerService.createDeliveryManager(requestDto, user.getId());
-//            apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
-//        } catch (UserException e){
-//            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
-//        }
-//       return apiResult;
-//    }
+    @PostMapping
+    public ApiResult createDeliveryManager(@RequestBody @Validated({DeliveryManagerValid0001.class}) ManagerRequestDto requestDto, @RequestHeader("X-User-Name") String username, Errors errors) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        log.info(username);
+        if(errors.hasErrors()) {
+            return bindError(errors, apiResult);
+        }
+        try{
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            DeliveryManagerResponse response = deliveryManagerService.createDeliveryManager(requestDto, user.getId());
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
+        } catch (UserException e){
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+       return apiResult;
+    }
 
     @GetMapping
     public ApiResult getAllDeliveryManagers() {
@@ -83,17 +85,17 @@ public class DeliveryManagerController extends CustomApiController {
         return apiResult;
     }
 
-//    @DeleteMapping("/{deliveryId}")
-//    public ApiResult deleteDeliveryManager(@PathVariable("deliveryId") UUID deliveryId, @AuthenticationPrincipal SecurityUserDetails userDetails) {
-//        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-//        try{
-//            User user = userRepository.findById(userDetails.getId())
-//                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//            DeliveryManagerResponse response = deliveryManagerService.deleteDeliveryManager(deliveryId, user.getId());
-//            apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
-//        } catch (UserException e){
-//            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
-//        }
-//       return apiResult;
-//    }
+    @DeleteMapping("/{deliveryId}")
+    public ApiResult deleteDeliveryManager(@PathVariable("deliveryId") UUID deliveryId, @RequestHeader("X-User-Name") String username) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try{
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            DeliveryManagerResponse response = deliveryManagerService.deleteDeliveryManager(deliveryId, user.getId());
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
+        } catch (UserException e){
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+       return apiResult;
+    }
 }
