@@ -10,6 +10,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Arrays;
 
 @Aspect
 @Component
@@ -24,10 +25,10 @@ public class RoleCheckAspect {
         System.out.println("User Role in Header: " + userRole); // 역할 정보 확인용 로그
 
         // 헤더에 역할이 존재하고, 그것이 애노테이션에서 요구하는 역할과 일치하는지 확인
-        if (userRole != null && userRole.equals(roleCheck.value())) {
+        if (userRole != null && Arrays.asList(roleCheck.roles()).contains(userRole)) {
             return joinPoint.proceed(); // 역할이 맞으면 메서드 실행
         } else {
-            throw new AccessDeniedException("Access denied. Required role: " + roleCheck.value());
+            throw new AccessDeniedException("Access denied. Required role: " + Arrays.toString(roleCheck.roles()));
         }
     }
 }
