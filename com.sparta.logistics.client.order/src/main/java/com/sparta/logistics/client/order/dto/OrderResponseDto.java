@@ -1,11 +1,11 @@
 package com.sparta.logistics.client.order.dto;
 
 import com.sparta.logistics.client.order.common.type.OrderStatus;
-import com.sparta.logistics.client.order.model.DeliveryPath;
 import com.sparta.logistics.client.order.model.Order;
-import com.sparta.logistics.client.order.model.OrderProduct;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,8 @@ import java.util.UUID;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderResponseDto {
 
     private UUID orderId;
@@ -24,8 +26,9 @@ public class OrderResponseDto {
     private String remark;
 
     private DeliveryResponseDto delivery;
-    private List<OrderProduct> products = new ArrayList<>();
-    private List<DeliveryPath> deliveryPaths = new ArrayList<>();
+    private List<OrderProductResponseDto> products = new ArrayList<>();
+    private List<DeliveryPathResponseDto> deliveryPaths = new ArrayList<>();
+
 
     public static OrderResponseDto of(Order order) {
         return OrderResponseDto.builder()
@@ -36,7 +39,18 @@ public class OrderResponseDto {
                 .status(order.getStatus())
                 .isDeleted(order.isDeleted())
                 .remark(order.getRemark())
-                .products(order.getOrderProducts())
                 .build();
+    }
+
+    // 필요한 필드만 포함된 생성자 추가
+    public OrderResponseDto(UUID orderId, UUID senderId, UUID receiverId, UUID deliveryId,
+                            OrderStatus status, boolean isDeleted, String remark) {
+        this.orderId = orderId;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.deliveryId = deliveryId;
+        this.status = status;
+        this.isDeleted = isDeleted;
+        this.remark = remark;
     }
 }

@@ -4,6 +4,7 @@ import com.sparta.logistics.client.order.common.exception.OrderProcException;
 import com.sparta.logistics.client.order.common.type.OrderStatus;
 import com.sparta.logistics.client.order.dto.OrderRequestDto;
 import com.sparta.logistics.client.order.dto.OrderResponseDto;
+import com.sparta.logistics.client.order.dto.OrderSearchCriteria;
 import com.sparta.logistics.client.order.dto.OrderSearchDto;
 import com.sparta.logistics.client.order.model.Order;
 import com.sparta.logistics.client.order.repository.OrderRepository;
@@ -59,20 +60,19 @@ public class OrderService {
 
     // 주문 삭제
     @Transactional
-    public OrderResponseDto deleteOrder(UUID orderId, OrderStatus orderStatus) throws OrderProcException {
+    public void deleteOrder(UUID orderId, OrderStatus orderStatus) throws OrderProcException {
         // 주문 확인
         Order order = orderRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow( ()->
             // 주문이 존재하지 않습니다.
             new OrderProcException(ApiResultError.ORDER_NO_EXIST)
         );
 
-        Order deleteOrder = Order.OrderDeleteBuilder()
-                .orderId(orderId)
+        Order deleteOrder = Order.OrderUpdateStatusBuilder()
+                .order(order)
                 .orderStatus(orderStatus)
+                .isDeleted(true)
                 .build();
-
-
-        return OrderResponseDto.of(orderRepository.save(deleteOrder));
+        orderRepository.save(deleteOrder);
     }
 
     @Transactional
@@ -96,6 +96,23 @@ public class OrderService {
         return orderRepository.findByOrderIdWithOrderProducts(orderId);
     }
 
+    public OrderResponseDto updateOrderStatus(UUID orderId, OrderStatus orderStatus) throws OrderProcException {
+        Order order = orderRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow( ()->
+                // 주문이 존재하지 않습니다.
+                new OrderProcException(ApiResultError.ORDER_NO_EXIST)
+        );
 
+        Order updateOrder = Order.OrderUpdateStatusBuilder()
+                .order(order)
+                .orderStatus(orderStatus)
+                .isDeleted(false)
+                .build();
+
+        return OrderResponseDto.of(orderRepository.save(updateOrder));
+    }
+
+    public Page<OrderResponseDto> searchOrders(OrderSearchCriteria orderSearchCriteria, Pageable pageable){
+        return orderRepository.searchOrders(orderSearchCriteria, pageable);
+    }
 
 }

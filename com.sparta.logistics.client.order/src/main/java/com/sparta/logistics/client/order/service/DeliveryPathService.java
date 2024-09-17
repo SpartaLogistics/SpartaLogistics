@@ -9,12 +9,14 @@ import com.sparta.logistics.client.order.repository.DeliveryPathRepository;
 import com.sparta.logistics.common.type.ApiResultError;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -64,7 +66,10 @@ public class DeliveryPathService {
         return DeliveryPathResponseDto.of(deliveryPathRepository.save(deliveryPath));
     }
 
-    public void deleteAllDeliveryPaths(Delivery delivery) throws OrderProcException {
+    public void deleteAllDeliveryPaths(UUID deliveryId) throws OrderProcException {
+        Delivery delivery = Delivery.builder()
+                .deliveryId(deliveryId)
+                .build();
         List<DeliveryPath> deliveryPathList = deliveryPathRepository.findAllByDeliveryAndIsDeletedFalse(delivery);
         for (DeliveryPath deliveryPath : deliveryPathList) {
             UUID deliveryPathId = deliveryPath.getDeliveryPathId();
@@ -73,13 +78,23 @@ public class DeliveryPathService {
     }
 
     public List<DeliveryPathResponseDto> createDeliveryPaths(UUID deliveryId, List<DeliveryPathRequestDto> deliveryPathRequestDtos) throws OrderProcException {
-        List<DeliveryPathResponseDto> newDeliveryPaths = new ArrayList<>();
+        List<DeliveryPath> newDeliveryPaths = new ArrayList<>();
+        Delivery delivery = Delivery.builder()
+                .deliveryId(deliveryId)
+                .build();
         for(DeliveryPathRequestDto deliveryPathRequestDto : deliveryPathRequestDtos){
             deliveryPathRequestDto.setDeliveryId(deliveryId);
-            newDeliveryPaths.add(this.createDeliveryPath(deliveryPathRequestDto));
+            DeliveryPath deliveryPath = DeliveryPath.DeliveryPathCreateBuilder()
+                    .deliveryPathRequestDto(deliveryPathRequestDto)
+                    .delivery(delivery)
+                    .build();
+            newDeliveryPaths.add(deliveryPath);
+            log.debug("!!!!!!!!!!!!! {}", deliveryPath);
         }
+        return deliveryPathRepository.saveAll(newDeliveryPaths).stream()
+                .map(DeliveryPathResponseDto::of)
+                .toList();
 
-        return newDeliveryPaths;
     }
 
 }
