@@ -1,6 +1,21 @@
 spring:
   application:
     name: ai-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ai
+    driver-class-name: org.postgresql.Driver
+    username: ai_service
+    password: ai
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
 
 eureka:
   client:
@@ -9,3 +24,8 @@ eureka:
 
 server:
   port: 19094
+
+spartaLogistics:
+  ai:
+    url:  https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent
+    api-key: AIzaSyAKf6QSyctaj_gDQxzo4CfSRGJMt4Ckgys

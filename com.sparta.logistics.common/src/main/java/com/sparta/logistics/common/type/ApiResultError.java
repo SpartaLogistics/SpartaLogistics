@@ -22,8 +22,7 @@ public enum ApiResultError {
 
 
     ERROR_AI_API("3000", "AI 오류가 발생했습니다"),
-    ERROR_AI_API_NO_PRODUCT("3001", "해당 상품이 존재하지 않습니다."),
-    ERROR_AI_API_EXCEED_LENGTH("3002", "답변 글자수가 너무 많습니다."),
+    ERROR_AI_NOT_EXIST("3001", "AI 질문 내역이 존재하지 않습니다."),
 
 
     ORDER_NO_EXIST("4000", "주문이 존재하지 않습니다."),
