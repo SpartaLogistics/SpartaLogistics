@@ -8,6 +8,7 @@ import com.sparta.logistics.client.hub.model.validation.CompanyVaild0001;
 import com.sparta.logistics.client.hub.service.CompanyService;
 import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
+import com.sparta.logistics.common.model.RoleCheck;
 import com.sparta.logistics.common.type.ApiResultError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,13 +26,14 @@ import java.util.UUID;
 @RequestMapping("/companies")
 public class CompanyController extends CustomApiController {
 
-    // TODO : Search, 권한 관리 ,userId
-
     private final CompanyService companyService;
 
+    @RoleCheck(roles = {"MASTER", "OWNER"})
     @PostMapping
     @Operation(summary = "업체 생성 API", description = "업체를 생성합니다.")
-    public ApiResult createCompany(@RequestBody @Validated({CompanyVaild0001.class}) CompanyRequestDto requestDto, Errors errors
+    public ApiResult createCompany(@RequestBody @Validated({CompanyVaild0001.class}) CompanyRequestDto requestDto,
+                                   Errors errors,
+                                   @RequestHeader("X-User-Name") String username
     ) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         if (errors.hasErrors()) {
@@ -39,7 +41,7 @@ public class CompanyController extends CustomApiController {
         }
 
         try {
-            CompanyResponseDto responseDto = companyService.createCompany(requestDto);
+            CompanyResponseDto responseDto = companyService.createCompany(requestDto, username);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -73,12 +75,15 @@ public class CompanyController extends CustomApiController {
         return apiResult;
     }
 
+    @RoleCheck(roles = {"MASTER", "OWNER"})
     @PatchMapping("/{companyId}")
-    @Operation(summary = "업체 목록 조회 API", description = "삭제되지 않은 업체 목록을 조회합니다.")
-    public ApiResult updateCompany(@PathVariable UUID companyId, @RequestBody CompanyRequestDto requestDto) {
+    @Operation(summary = "업체 수정 API", description = "삭제되지 않은 업체 목록을 수정합니다.")
+    public ApiResult updateCompany(@PathVariable UUID companyId,
+                                   @RequestBody CompanyRequestDto requestDto,
+                                   @RequestHeader("X-User-Name") String username) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
-            CompanyResponseDto responseDto = companyService.updateCompany(companyId, requestDto);
+            CompanyResponseDto responseDto = companyService.updateCompany(companyId, requestDto, username);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -86,12 +91,14 @@ public class CompanyController extends CustomApiController {
         return apiResult;
     }
 
+    @RoleCheck(roles = {"MASTER", "OWNER"})
     @DeleteMapping("/{companyId}")
     @Operation(summary = "업체 삭제 API", description = "업체를 삭제합니다. (논리적 삭제)")
-    public ApiResult deleteCompany(@PathVariable UUID companyId) {
+    public ApiResult deleteCompany(@PathVariable UUID companyId,
+                                   @RequestHeader("X-User-Name") String username) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
-            companyService.deleteCompany(companyId);
+            companyService.deleteCompany(companyId, username);
             apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());

@@ -36,4 +36,9 @@ public class CompanyRequestDto {
             message = "업체 관리 허브 ID 정보가 누락되었습니다."
     )
     private UUID managingHubId;
+
+    @NotNull(groups = {CompanyVaild0001.class},
+            message = "업체 담당자 정보가 누락되었습니다."
+    )
+    private String companyManagerUsername;
 }

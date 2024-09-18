@@ -29,7 +29,7 @@ public class HubController extends CustomApiController {
 
     private final HubService hubService;
 
-    @RoleCheck(roles = "MASTER")
+    @RoleCheck(roles = {"MASTER", "OWNER"})
     @Operation(summary = "허브 생성 API", description = "허브를 생성합니다.")
     @PostMapping
     public ApiResult createHub(@RequestBody @Validated({HubValid0001.class}) HubRequestDto requestDto, Errors errors) {
