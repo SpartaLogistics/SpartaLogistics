@@ -60,6 +60,9 @@ springdoc:
     urls[2]:
       name: Order API
       url: http://localhost:19091/orders/v3/api-docs
+    urls[3]:
+      name: AI API
+      url: http://localhost:19091/ai/v3/api-docs
 
 eureka:
   client:

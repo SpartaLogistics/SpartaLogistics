@@ -22,6 +22,31 @@ eureka:
     service-url:
       defaultZone: http://localhost:19090/eureka/
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+    endpoint:
+      health:
+        show-details: always
+      prometheus:
+        enabled: true
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0
+
+springdoc:
+  api-docs:
+    version: openapi_3_1
+    enabled: true
+    path: /ai/v3/api-docs
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
 server:
   port: 19094
 
