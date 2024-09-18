@@ -4,7 +4,7 @@ import com.sparta.logistics.client.user.common.exception.UserException;
 import com.sparta.logistics.client.user.repository.UserRepository;
 import com.sparta.logistics.client.user.model.User;
 import com.sparta.logistics.client.user.model.UserVO;
-import com.sparta.logistics.client.user.dto.UserRequest;
+import com.sparta.logistics.client.user.dto.UserRequestDto;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     @Transactional
-    public UserVO createUser(UserRequest userRequest) throws UserException {
+    public UserVO createUser(UserRequestDto userRequest) throws UserException {
         log.info("Attempting to create user: {}", userRequest.getUsername());
         User user = User.createUser(
                 userRequest.getUsername(),
