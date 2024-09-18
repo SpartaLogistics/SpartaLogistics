@@ -7,6 +7,7 @@ import com.sparta.logistics.client.hub.model.validation.HubPathValid0001;
 import com.sparta.logistics.client.hub.service.HubPathService;
 import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
+import com.sparta.logistics.common.model.RoleCheck;
 import com.sparta.logistics.common.type.ApiResultError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +29,7 @@ public class HubPathController extends CustomApiController {
 
     private final HubPathService hubPathService;
 
+    @RoleCheck(roles = "MASTER")
     @PostMapping
     @Operation(summary = "허브 이동 경로 생성 API", description = "허브 이동 경로를 생성합니다.")
     public ApiResult createHubPath(
@@ -75,6 +77,7 @@ public class HubPathController extends CustomApiController {
     }
 
 
+    @RoleCheck(roles = "MASTER")
     @PatchMapping("/{hubPathId}")
     @Operation(summary = "허브 이동 경로 수정 API", description = "삭제되지 않은 허브 이동 경로를 수정합니다.")
     public ApiResult updateHubPath(@RequestBody HubPathRequestDto requestDto, @PathVariable UUID hubPathId) {
@@ -88,6 +91,7 @@ public class HubPathController extends CustomApiController {
         return apiResult;
     }
 
+    @RoleCheck(roles = "MASTER")
     @DeleteMapping("/{hubPathId}")
     @Operation(summary = "허브 이동 경로 삭제 API", description = "허브 이동 경로를 삭제합니다. (논리적 삭제)")
     public ApiResult deleteHubPath(@PathVariable UUID hubPathId) {
