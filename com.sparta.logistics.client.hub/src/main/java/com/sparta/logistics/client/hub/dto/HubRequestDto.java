@@ -41,4 +41,9 @@ public class HubRequestDto {
     )
     private Integer sequence;     // 허브 순서
 
+    @NotNull(groups = {HubValid0001.class},
+            message = "허브관리자 정보가 누락되었습니다."
+    )
+    private String managerUsername;
+
 }

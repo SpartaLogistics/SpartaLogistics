@@ -8,6 +8,7 @@ import com.sparta.logistics.client.hub.model.validation.HubValid0002;
 import com.sparta.logistics.client.hub.service.HubService;
 import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
+import com.sparta.logistics.common.model.RoleCheck;
 import com.sparta.logistics.common.type.ApiResultError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.UUID;
 
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/hubs")
@@ -29,6 +29,7 @@ public class HubController extends CustomApiController {
 
     private final HubService hubService;
 
+    @RoleCheck(roles = "MASTER")
     @Operation(summary = "허브 생성 API", description = "허브를 생성합니다.")
     @PostMapping
     public ApiResult createHub(@RequestBody @Validated({HubValid0001.class}) HubRequestDto requestDto, Errors errors) {
@@ -74,6 +75,7 @@ public class HubController extends CustomApiController {
         return apiResult;
     }
 
+    @RoleCheck(roles = "MASTER")
     @Operation(summary = "허브 수정 API", description = "삭제되지 않은 허브를 수정합니다.")
     @PatchMapping("/{id}")
     public ApiResult updateHub(
@@ -97,6 +99,7 @@ public class HubController extends CustomApiController {
     }
 
 
+    @RoleCheck(roles = "MASTER")
     @Operation(summary = "허브 삭제 API", description = "허브를 삭제합니다. 논리적 삭제")
     @DeleteMapping("/{id}")
     public ApiResult deleteHub(@PathVariable("id") UUID hubId) {
