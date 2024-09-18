@@ -42,6 +42,19 @@ spring:
       discovery:
         locator:
           enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
+springdoc:
+  swagger-ui:
+    use-root-path: true
+    urls[0]:
+      name: User API
+      url: http://localhost:19091/users/v3/api-docs
+    urls[1]:
+      name: Hub API
+      url: http://localhost:19091/hubs/v3/api-docs
+    urls[2]:
+      name: Order API
+      url: http://localhost:19091/orders/v3/api-docs
+
 eureka:
   client:
     service-url:

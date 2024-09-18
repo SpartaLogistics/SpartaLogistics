@@ -58,9 +58,8 @@ public class UserController extends CustomApiController {
     @RoleCheck(roles = {"CUSTOMER", "MASTER"})
     @Operation(summary = "userId로 유저 검색", description = "userId로 유저 검색")
     @GetMapping("/{userId}")
-    public ApiResult getUserInfo(@PathVariable Long userId, @RequestHeader("X-User-Name") String username) {
+    public ApiResult getUserInfo(@PathVariable Long userId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-        log.info(username);
         try{
             UserVO user = userService.getUserInfo(userId);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(user);
