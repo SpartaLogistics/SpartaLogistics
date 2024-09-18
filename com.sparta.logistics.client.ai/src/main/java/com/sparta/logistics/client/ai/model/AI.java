@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.util.UUID;
 
 @Entity
@@ -26,16 +25,14 @@ public class AI extends Timestamped {
     private UUID aiId;
     private Long userId;
     private String service;     // 호출 서비스
+
+    @Lob
     private String question;
 
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     private boolean isDeleted;
-
-    public void softDelete() {
-        this.isDeleted = true;
-    }
 
     @Builder(builderMethodName = "AICreateBuilder", builderClassName = "AICreateBuilder")
     public AI(Long userId, AIRequestDto requestDto) {
@@ -44,5 +41,9 @@ public class AI extends Timestamped {
         this.question = requestDto.getQuestion();
         this.content = requestDto.getContent();
         this.isDeleted = false;
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
     }
 }

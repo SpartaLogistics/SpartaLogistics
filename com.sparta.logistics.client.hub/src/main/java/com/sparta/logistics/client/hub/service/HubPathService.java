@@ -1,11 +1,14 @@
 package com.sparta.logistics.client.hub.service;
 
+import com.sparta.logistics.client.hub.client.AiClient;
+import com.sparta.logistics.client.hub.client.dto.AiRequestDto;
 import com.sparta.logistics.client.hub.common.exception.HubException;
 import com.sparta.logistics.client.hub.dto.HubPathRequestDto;
 import com.sparta.logistics.client.hub.dto.HubPathResponseDto;
 import com.sparta.logistics.client.hub.model.Hub;
 import com.sparta.logistics.client.hub.model.HubPath;
 import com.sparta.logistics.client.hub.repository.HubPathRepository;
+import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,7 @@ public class HubPathService {
 
     private final HubService hubService;
     private final HubPathRepository hubPathRepository;
+    private final AiClient aiClient;
 
     @CacheEvict(cacheNames = "hubPathAllCache", allEntries = true)
     public HubPathResponseDto createHubPath(HubPathRequestDto requestDto) throws HubException {
@@ -129,4 +133,44 @@ public class HubPathService {
         Page<HubPath> hubPaths = hubPathRepository.searchPaths(departureHubId, arrivalHubId, minDuration, maxDuration, pageable);
         return hubPaths.map(HubPathResponseDto::of);
     }
+
+    public ApiResult getOptimalHubPath(UUID departureHubId, UUID arrivalHubId) throws HubException {
+        List<HubPathResponseDto> paths = getHubPathList(departureHubId, arrivalHubId);
+
+        // AI요청을 위한 데이터 준비
+        String pathsContent = convertPathsToSimplifiedString(paths);
+
+        AiRequestDto aiRequestDto = new AiRequestDto();
+        aiRequestDto.setService("hub-service");
+        String preQuestion = "교통 수단: 자동차, 목적: 시간 단축, 기준: 주소 간 현재 예상 소요시간\n";
+        String instructions = "1. 주어진 정보만을 사용하여 판단해주세요.\n" +
+                "2. 각 경로의 소요 시간을 고려하여 최적의 경로를 선택해주세요.\n" +
+                "3. 최적 경로는 허브 이름으로 경로만 응답해주세요.\n";
+        String question = preQuestion + instructions + "다음 허브 이동 경로 리스트 중에서 최적의 경로를 선택해주세요 :\n\n" + pathsContent;
+        log.info("@@{}", pathsContent);
+
+        aiRequestDto.setQuestion(question);
+
+
+        // AI 서비스 호출 및 결과 반환
+        return aiClient.createAI(aiRequestDto);
+    }
+
+    private String convertPathsToSimplifiedString(List<HubPathResponseDto> paths) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < paths.size(); i++) {
+            HubPathResponseDto path = paths.get(i);
+            sb.append(String.format("%d. %s (%s)", i + 1, path.getHubName(), path.getAddress()));
+
+            if (i < paths.size() - 1) {
+                sb.append(" -> ");
+                sb.append(String.format("%s (%s)", path.getNextHubName(), path.getNextHubAddress()));
+                sb.append(String.format(", 예상 소요 시간: %d분", path.getDuration()));
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+
 }
