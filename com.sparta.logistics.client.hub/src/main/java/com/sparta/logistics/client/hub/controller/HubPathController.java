@@ -158,5 +158,15 @@ public class HubPathController extends CustomApiController {
         return apiResult;
     }
 
+    @GetMapping("/optimal")
+    @Operation(summary = "허브 이동 최적 경로 AI 조회 API", description = "출발 허브 ID(departureHubId) 도착 허브 ID(arrivalHubId)간의 허브 리스트를 AI에게 요청하여 최적의 경로를 응답받습니다.")
+    public ApiResult getOptimalHubPath(@RequestParam UUID departureHubId, @RequestParam UUID arrivalHubId) {
+        try {
+            return hubPathService.getOptimalHubPath(departureHubId, arrivalHubId);
+        } catch (HubException e) {
+            return new ApiResult(e.getCode()).setResultMessage(e.getMessage());
+        }
+    }
+
 
 }
