@@ -1,7 +1,7 @@
 package com.sparta.logistics.client.user.service;
 
 import com.sparta.logistics.client.user.common.exception.UserException;
-import com.sparta.logistics.client.user.dto.DeliveryManagerResponse;
+import com.sparta.logistics.client.user.dto.DeliveryManagerResponseDto;
 import com.sparta.logistics.client.user.dto.ManagerRequestDto;
 import com.sparta.logistics.client.user.model.DeliveryManager;
 import com.sparta.logistics.client.user.model.User;
@@ -24,35 +24,35 @@ public class DeliveryManagerService {
     private final DeliveryManagerRepository deliveryManagerRepository;
     private final UserRepository userRepository;
 
-    public DeliveryManagerResponse createDeliveryManager(ManagerRequestDto requestDto, Long userid) throws UserException {
+    public DeliveryManagerResponseDto createDeliveryManager(ManagerRequestDto requestDto, Long userid) throws UserException {
         User user = userRepository.findById(userid)
                         .orElseThrow(()-> new UserException(ApiResultError.USER_NO_EXIST));
         DeliveryManager deliveryManager = DeliveryManager.createDeliveryManager(user, requestDto.getSlackId(),requestDto.getDeliveryManagerType());
-        return DeliveryManagerResponse.of(deliveryManagerRepository.save(deliveryManager));
+        return DeliveryManagerResponseDto.of(deliveryManagerRepository.save(deliveryManager));
     }
 
-    public List<DeliveryManagerResponse> getAllDeliveryManagers() throws UserException {
+    public List<DeliveryManagerResponseDto> getAllDeliveryManagers() throws UserException {
         List<DeliveryManager> deliveryManagers = deliveryManagerRepository.findAll();
-        return deliveryManagers.stream().map(DeliveryManagerResponse::of).toList();
+        return deliveryManagers.stream().map(DeliveryManagerResponseDto::of).toList();
     }
 
-    public DeliveryManagerResponse getDeliveryManagerById(UUID deliveryId) throws UserException {
+    public DeliveryManagerResponseDto getDeliveryManagerById(UUID deliveryId) throws UserException {
         DeliveryManager deliveryManager = deliveryManagerRepository.findById(deliveryId)
                 .orElseThrow(()-> new UserException(ApiResultError.DELIVERY_MANAGER_NO_EXIST));
-        return DeliveryManagerResponse.of(deliveryManager);
+        return DeliveryManagerResponseDto.of(deliveryManager);
     }
 
-    public DeliveryManagerResponse patchDeliveryManager(UUID deliveryId, ManagerRequestDto requestDto) throws UserException {
+    public DeliveryManagerResponseDto patchDeliveryManager(UUID deliveryId, ManagerRequestDto requestDto) throws UserException {
         DeliveryManager deliveryManager = deliveryManagerRepository.findById(deliveryId)
                 .orElseThrow(()-> new UserException(ApiResultError.DELIVERY_MANAGER_NO_EXIST));
         deliveryManager.update(requestDto);
-        return DeliveryManagerResponse.of(deliveryManagerRepository.save(deliveryManager));
+        return DeliveryManagerResponseDto.of(deliveryManagerRepository.save(deliveryManager));
     }
 
-    public DeliveryManagerResponse deleteDeliveryManager(UUID deliveryId, Long userid) throws UserException {
+    public DeliveryManagerResponseDto deleteDeliveryManager(UUID deliveryId, Long userid) throws UserException {
         DeliveryManager deliveryManager = deliveryManagerRepository.findById(deliveryId)
                 .orElseThrow(()-> new UserException(ApiResultError.DELIVERY_MANAGER_NO_EXIST));
         deliveryManager.softDelete();
-        return DeliveryManagerResponse.of(deliveryManager);
+        return DeliveryManagerResponseDto.of(deliveryManager);
     }
 }
