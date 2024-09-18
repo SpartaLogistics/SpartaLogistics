@@ -6,6 +6,8 @@ import com.sparta.logistics.client.hub.dto.HubRequestDto;
 import com.sparta.logistics.client.hub.dto.HubResponseDto;
 import com.sparta.logistics.client.hub.model.Hub;
 import com.sparta.logistics.client.hub.repository.HubRepository;
+import com.sparta.logistics.common.client.UserClient;
+import com.sparta.logistics.common.model.UserVO;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -23,11 +25,21 @@ import java.util.stream.Collectors;
 public class HubService {
 
     private final HubRepository hubRepository;
+    private final UserClient userClient;
 
     // 허브 생성 메서드
     // 새로운 허브가 생성되면 전체 허브의 변화가 생겼기 때문에 삭제 필요
     @CacheEvict(cacheNames = "hubAllCache", allEntries = true)
     public HubResponseDto createHub(HubRequestDto requestDto) throws HubException {
+        // User 정보 확인
+        UserVO user;
+
+        user = userClient.findByUsername(requestDto.getManagerUsername());
+        if (user == null) {
+            throw new HubException(ApiResultError.USER_NO_EXIST);
+        }
+
+
         // sequence 유일성 검증
         validateUniqueSequence(requestDto.getSequence());
 
@@ -35,6 +47,7 @@ public class HubService {
         Hub hub = Hub.createHubInfoBuilder()
                 .hubRequestDto(requestDto)
                 .sequence(requestDto.getSequence())
+                .managerUsername(user.getUsername())
                 .build();
 
         return HubResponseDto.of(hubRepository.save(hub));
@@ -61,7 +74,6 @@ public class HubService {
     @CacheEvict(cacheNames = "hubAllCache", allEntries = true)
     @Transactional
     public HubResponseDto updateHub(UUID hubId, HubRequestDto requestDto) throws HubException {
-        // TODO : 권한 관리 : 생성,수정,삭제는 마스터 관리자만 가능
         Hub hub = hubRepository.findByHubId(hubId)
                 .orElseThrow(() -> new HubException(ApiResultError.HUB_NO_EXIST));
 

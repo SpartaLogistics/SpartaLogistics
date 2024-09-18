@@ -46,14 +46,18 @@ public class Hub extends Timestamped {
     @Column(nullable = false)
     private Integer sequence;
 
+    @Column(name = "manager_username", nullable = false)
+    private String managerUsername;
+
     // 허브 생성용 빌더 클래스
     @Builder(builderClassName = "CreateHubInfoBuilder", builderMethodName = "createHubInfoBuilder")
-    public Hub(HubRequestDto hubRequestDto, Integer sequence) {
+    public Hub(HubRequestDto hubRequestDto, Integer sequence, String managerUsername) {
         this.name = hubRequestDto.getName();
         this.address = hubRequestDto.getAddress();
         this.latitude = hubRequestDto.getLatitude();
         this.longitude = hubRequestDto.getLongitude();
         this.sequence = sequence;
+        this.managerUsername = managerUsername;
     }
 
     // 소프트 삭제 메서드
@@ -77,6 +81,9 @@ public class Hub extends Timestamped {
         }
         if (hubRequestDto.getSequence() != null) {
             this.sequence = hubRequestDto.getSequence();
+        }
+        if (hubRequestDto.getManagerUsername() != null) {
+            this.managerUsername = hubRequestDto.getManagerUsername();
         }
     }
 
