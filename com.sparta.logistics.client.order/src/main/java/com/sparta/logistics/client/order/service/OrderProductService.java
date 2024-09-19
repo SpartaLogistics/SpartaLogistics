@@ -2,25 +2,26 @@ package com.sparta.logistics.client.order.service;
 
 import com.sparta.logistics.client.order.common.exception.OrderProcException;
 import com.sparta.logistics.client.order.dto.*;
-import com.sparta.logistics.client.order.model.Order;
 import com.sparta.logistics.client.order.model.OrderProduct;
 import com.sparta.logistics.client.order.repository.OrderProductRepository;
 import com.sparta.logistics.common.type.ApiResultError;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class OrderProductService {
 
     private final OrderProductRepository orderProductRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     public List<OrderProductResponseDto> findByOrderId(UUID orderId) throws OrderProcException {
         return orderProductRepository.findByOrderId(orderId).stream()
                 .map(OrderProductResponseDto::of)
@@ -28,7 +29,6 @@ public class OrderProductService {
     }
 
     public OrderProduct create(OrderProduct orderProduct) {
-        // TODO product 존재여부, 수량, 상태 확인
 
         return orderProductRepository.save(orderProduct);
     }
@@ -57,30 +57,32 @@ public class OrderProductService {
     }
 
     // 기존에 저장된 주문 품목을 삭제처리하고 새로 저장
-    public void deleteAndCreateOrderProducts(UUID orderId, List<OrderProductRequestDto> orderProducts) throws OrderProcException {
+    public void deleteAndCreateOrderProducts(UUID orderId, List<OrderProductRequestDto> orderProducts, String userId) throws OrderProcException {
         // 기존 품목 삭제
-        this.deleteOrderProducts(orderId);
+        this.deleteOrderProducts(orderId, userId);
 
         // 저장
         this.createOrderProducts(orderId, orderProducts);
     }
 
-    public void deleteOrderProduct(UUID orderProductId) throws OrderProcException {
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteOrderProduct(UUID orderProductId, String userId) throws OrderProcException {
         OrderProduct orderProduct = orderProductRepository.findByOrderProductId(orderProductId).orElseThrow(()->
                 new OrderProcException(ApiResultError.ORDER_PRODUCT_NO_EXIST)
         );
 
-        orderProduct.softDelete();
+        orderProduct.softDelete(userId);
         orderProductRepository.save(orderProduct);
     }
 
     // 품목 전체 삭제 처리
-    public void deleteOrderProducts(UUID orderId) throws OrderProcException {
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteOrderProducts(UUID orderId, String userId) throws OrderProcException {
         List<OrderProduct> newOrderProducts = orderProductRepository.findByOrderId(orderId);
 
         for(OrderProduct orderProduct : newOrderProducts) {
             UUID orderProductId = orderProduct.getOrderProductId();
-            this.deleteOrderProduct(orderProductId);
+            this.deleteOrderProduct(orderProductId, userId);
         }
     }
 
@@ -89,7 +91,6 @@ public class OrderProductService {
         OrderProduct orderProduct = orderProductRepository.findByOrderProductId(orderProductId)
                 .orElseThrow(() -> new OrderProcException(ApiResultError.ORDER_PRODUCT_NO_EXIST));
 
-        // TODO 수량 변경 시 상품의 재고량 확인 필요
         int totalQuantity = 100;
         if(totalQuantity < orderProductRequestDto.getQuantity()) {
             // 재고 부족
@@ -104,11 +105,11 @@ public class OrderProductService {
     }
 
     // 삭제 후 재저장
-    public List<OrderProductResponseDto> deleteAndCreateProducts(UUID orderId, List<OrderProductRequestDto> newProducts) throws OrderProcException {
+    public List<OrderProductResponseDto> deleteAndCreateProducts(UUID orderId, List<OrderProductRequestDto> newProducts, String userId) throws OrderProcException {
         // 삭제 처리
         List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
         for(OrderProduct orderProduct : orderProducts) {
-            orderProduct.softDelete();
+            orderProduct.softDelete(userId);
             orderProductRepository.save(orderProduct);
         }
 
@@ -117,11 +118,12 @@ public class OrderProductService {
         for(OrderProductRequestDto newOrderProduct : newProducts) {
             retList.add(this.create(orderId, newOrderProduct));
         }
-
+        log.info("!!!!!!!!!! ===========> product delete {}", retList);
         return retList;
     }
 
     // productId로 찾기
+    @Transactional(rollbackFor = Exception.class)
     public List<UUID> findDistinctOrderIdsByProductId(UUID productId) {
         return orderProductRepository.findDistinctOrderIdsByProductId(productId);
     }

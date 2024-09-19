@@ -1,13 +1,13 @@
 package com.sparta.logistics.client.hub.service;
 
-import com.sparta.logistics.client.hub.client.AiClient;
-import com.sparta.logistics.client.hub.client.dto.AiRequestDto;
+import com.sparta.logistics.common.client.AIClient;
 import com.sparta.logistics.client.hub.common.exception.HubException;
 import com.sparta.logistics.client.hub.dto.HubPathRequestDto;
 import com.sparta.logistics.client.hub.dto.HubPathResponseDto;
 import com.sparta.logistics.client.hub.model.Hub;
 import com.sparta.logistics.client.hub.model.HubPath;
 import com.sparta.logistics.client.hub.repository.HubPathRepository;
+import com.sparta.logistics.common.client.dto.AIRequestDto;
 import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class HubPathService {
 
     private final HubService hubService;
     private final HubPathRepository hubPathRepository;
-    private final AiClient aiClient;
+    private final AIClient aiClient;
 
     @CacheEvict(cacheNames = "hubPathAllCache", allEntries = true)
     public HubPathResponseDto createHubPath(HubPathRequestDto requestDto) throws HubException {
@@ -140,7 +140,7 @@ public class HubPathService {
         // AI요청을 위한 데이터 준비
         String pathsContent = convertPathsToSimplifiedString(paths);
 
-        AiRequestDto aiRequestDto = new AiRequestDto();
+        AIRequestDto aiRequestDto = new AIRequestDto();
         aiRequestDto.setService("hub-service");
         String preQuestion = "교통 수단: 자동차, 목적: 시간 단축, 기준: 주소 간 현재 예상 소요시간\n";
         String instructions = "1. 주어진 정보만을 사용하여 판단해주세요.\n" +

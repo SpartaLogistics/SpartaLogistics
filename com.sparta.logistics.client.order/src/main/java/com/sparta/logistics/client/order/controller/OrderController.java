@@ -66,11 +66,13 @@ public class OrderController extends CustomApiController {
      */
     @Operation(summary = "주문 삭제", description = "주문 삭제")
     @DeleteMapping("/{id}")
-    public ApiResult deleteOrder(@PathVariable("id") UUID orderId) {
+    public ApiResult deleteOrder(@PathVariable("id") UUID orderId,
+                                 @RequestHeader("X-User-Id") String userId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
 
+        log.info("====> loginUser {}", userId);
         try {
-            orderProcService.deleteOrder(orderId, OrderStatus.ORDER_CANCELED);
+            orderProcService.deleteOrder(orderId, OrderStatus.ORDER_CANCELED, userId);
             apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
         } catch (OrderProcException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -127,11 +129,12 @@ public class OrderController extends CustomApiController {
      */
     @Operation(summary = "주문 수정", description = "주문 수정")
     @PatchMapping
-    public ApiResult updateOrder(@RequestBody OrderRequestDto orderRequestDto) {
+    public ApiResult updateOrder(@RequestBody OrderRequestDto orderRequestDto,
+                                 @RequestHeader("X-User-Id") String userId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-
+        log.info("login User {}", userId);
         try {
-            OrderResponseDto order = orderService.updateOrder(orderRequestDto);
+            OrderResponseDto order = orderProcService.updateOrder(orderRequestDto, userId);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(order);
         } catch(OrderProcException e) {
             apiResult.set(e.getCode());

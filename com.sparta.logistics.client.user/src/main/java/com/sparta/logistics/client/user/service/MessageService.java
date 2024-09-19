@@ -1,6 +1,5 @@
 package com.sparta.logistics.client.user.service;
 
-import com.sparta.logistics.client.user.client.AiClient;
 import com.sparta.logistics.client.user.common.exception.UserException;
 import com.sparta.logistics.client.user.dto.AiRequestDto;
 import com.sparta.logistics.client.user.dto.MessageRequestDto;
@@ -27,7 +26,7 @@ import java.util.UUID;
 public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
-    private final AiClient aiClient;
+    //private final AiClient aiClient;
 
     public MessageResponseDto createMessage(MessageRequestDto request, Long userid) throws UserException {
         User sender = userRepository.findById(userid)
@@ -55,10 +54,10 @@ public class MessageService {
         return MessageResponseDto.from(message);
     }
 
-    public ApiResult getCorrectMessage(String message) throws UserException {
-        AiRequestDto aiRequestDto = new AiRequestDto();
-        aiRequestDto.setService("user-service");
-        aiRequestDto.setQuestion(message + "앞에 말의 문법이 틀린게 있다면 고쳐줘");
-        return aiClient.createAI(aiRequestDto);
-    }
+//    public ApiResult getCorrectMessage(String message) throws UserException {
+//        AiRequestDto aiRequestDto = new AiRequestDto();
+//        aiRequestDto.setService("user-service");
+//        aiRequestDto.setQuestion(message + "앞에 말의 문법이 틀린게 있다면 고쳐줘");
+//        return aiClient.createAI(aiRequestDto);
+//    }
 }

@@ -16,6 +16,7 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
+    open-in-view: false
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -32,6 +33,11 @@ spring:
       httpclient:
         hc5:
           enabled: true
+
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    filter-order: 1
 
 eureka:
   client:

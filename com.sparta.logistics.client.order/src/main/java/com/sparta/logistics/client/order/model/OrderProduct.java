@@ -42,7 +42,8 @@ public class OrderProduct extends Timestamped {
     @JsonBackReference
     private Order order;
 
-    public void softDelete() {
+    public void softDelete(String deletedByUserId) {
+        //this.delete(deletedByUserId);
         this.isDeleted = true;
     }
 

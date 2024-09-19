@@ -60,7 +60,8 @@ public class Product extends Timestamped {
 
     // 소프트 삭제 메서드
     public void softDelete(String deletedByUserId) {
-        this.delete(deletedByUserId);
+        //this.delete(deletedByUserId);
+        this.isDeleted = true;
     }
 
     // Company 엔티티의 ID를 반환하는 메서드

@@ -7,10 +7,10 @@ import com.sparta.logistics.client.order.model.Delivery;
 import com.sparta.logistics.client.order.model.DeliveryPath;
 import com.sparta.logistics.client.order.repository.DeliveryPathRepository;
 import com.sparta.logistics.common.type.ApiResultError;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,6 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class DeliveryPathService {
 
     private final DeliveryPathRepository deliveryPathRepository;
@@ -58,22 +57,23 @@ public class DeliveryPathService {
         return DeliveryPathResponseDto.of(deliveryPathRepository.save(deliveryPath));
     }
 
-    public DeliveryPathResponseDto deleteDeliveryPath(UUID deliveryPathId) throws OrderProcException {
+    public DeliveryPathResponseDto deleteDeliveryPath(UUID deliveryPathId, String userId) throws OrderProcException {
         DeliveryPath deliveryPath = deliveryPathRepository.findByDeliveryPathIdAndIsDeletedFalse(deliveryPathId).orElseThrow(()->
                 new OrderProcException(ApiResultError.DELIVERY_PATH_NO_EXIST));
 
-        deliveryPath.softDelete();
+        deliveryPath.softDelete(userId);
         return DeliveryPathResponseDto.of(deliveryPathRepository.save(deliveryPath));
     }
 
-    public void deleteAllDeliveryPaths(UUID deliveryId) throws OrderProcException {
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteAllDeliveryPaths(UUID deliveryId, String userId) throws OrderProcException {
         Delivery delivery = Delivery.builder()
                 .deliveryId(deliveryId)
                 .build();
         List<DeliveryPath> deliveryPathList = deliveryPathRepository.findAllByDeliveryAndIsDeletedFalse(delivery);
         for (DeliveryPath deliveryPath : deliveryPathList) {
             UUID deliveryPathId = deliveryPath.getDeliveryPathId();
-            this.deleteDeliveryPath(deliveryPathId);
+            this.deleteDeliveryPath(deliveryPathId, userId);
         }
     }
 
@@ -89,7 +89,6 @@ public class DeliveryPathService {
                     .delivery(delivery)
                     .build();
             newDeliveryPaths.add(deliveryPath);
-            log.debug("!!!!!!!!!!!!! {}", deliveryPath);
         }
         return deliveryPathRepository.saveAll(newDeliveryPaths).stream()
                 .map(DeliveryPathResponseDto::of)

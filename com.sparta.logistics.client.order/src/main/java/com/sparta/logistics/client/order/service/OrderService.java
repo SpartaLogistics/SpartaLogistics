@@ -60,7 +60,7 @@ public class OrderService {
 
     // 주문 삭제
     @Transactional
-    public void deleteOrder(UUID orderId, OrderStatus orderStatus) throws OrderProcException {
+    public void deleteOrder(UUID orderId, OrderStatus orderStatus, String userId) throws OrderProcException {
         // 주문 확인
         Order order = orderRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow( ()->
             // 주문이 존재하지 않습니다.
@@ -72,6 +72,8 @@ public class OrderService {
                 .orderStatus(orderStatus)
                 .isDeleted(true)
                 .build();
+        deleteOrder.softDelete(userId);
+        log.info("!!!!!!!!!!!Deleted order: {}", order);
         orderRepository.save(deleteOrder);
     }
 

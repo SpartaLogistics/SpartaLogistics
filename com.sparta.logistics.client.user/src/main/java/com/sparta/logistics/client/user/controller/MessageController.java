@@ -98,13 +98,13 @@ public class MessageController extends CustomApiController {
         return apiResult;
     }
 
-    @GetMapping("/optimal")
-    @Operation(summary = "메시지 문법 AI 조회 API", description = "메시지 내용의 문법이 맞는지 확인하는 ai 사용입니다.")
-    public ApiResult getCorrectMessage(@RequestParam String message) {
-        try {
-            return messageService.getCorrectMessage(message);
-        } catch (UserException e) {
-            return new ApiResult(e.getCode()).setResultMessage(e.getMessage());
-        }
-    }
+//    @GetMapping("/optimal")
+//    @Operation(summary = "메시지 문법 AI 조회 API", description = "메시지 내용의 문법이 맞는지 확인하는 ai 사용입니다.")
+//    public ApiResult getCorrectMessage(@RequestParam String message) {
+//        try {
+//            return messageService.getCorrectMessage(message);
+//        } catch (UserException e) {
+//            return new ApiResult(e.getCode()).setResultMessage(e.getMessage());
+//        }
+//    }
 }

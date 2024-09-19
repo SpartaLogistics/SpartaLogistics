@@ -110,8 +110,10 @@ ProductService {
                 product.getCompanyId(),
                 product.getQuantity(),
                 product.getManagingHubId(),
-                product.getPrice()
+                product.getPrice(),
+                userId
         );
+        log.info("product delete {}", productDeleted);
         kafkaTemplate.send("product-deleted", EventSerializer.serialize(productDeleted));
     }
 
@@ -128,7 +130,7 @@ ProductService {
     @Transactional
     public ProductResponseDto increaseQuantity(UUID productId, int quantity) throws HubException {
         log.info("Increasing quantity for product: {} by {}", productId, quantity);
-        Product product = productRepository.findByProductId(productId)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new HubException(ApiResultError.PRODUCT_NO_EXIST));
 
         product.setQuantity(product.getQuantity() + quantity);
@@ -156,15 +158,15 @@ ProductService {
     }
 
     // 테스트용 kafka
-    @Transactional
-    @KafkaListener(topics = "product-deleted", groupId = "product-service")
-    public void consumeFromProduct(String message) {
-        // 메시지를 ProductDeleted 객체로 역직렬화
-        ProductDeleted event = EventSerializer.deserialize(message, ProductDeleted.class);
-
-        // 역직렬화된 객체 사용
-        log.info("@@@ {}", event.getProductId());
-    }
+//    @Transactional
+//    @KafkaListener(topics = "product-deleted", groupId = "product-service")
+//    public void consumeFromProduct(String message) {
+//        // 메시지를 ProductDeleted 객체로 역직렬화
+//        ProductDeleted event = EventSerializer.deserialize(message, ProductDeleted.class);
+//
+//        // 역직렬화된 객체 사용
+//        log.info("@@@ {}", event.getProductId());
+//    }
 
 
     private void validateUserPermission(UserVO currentUser, Company company) throws HubException {

@@ -57,7 +57,8 @@ public class Delivery extends Timestamped{
     @OneToMany(mappedBy = "delivery")
     private List<DeliveryPath> deliveryPathsList;
 
-    public void softDelete() {
+    public void softDelete(String deletedByUserId) {
+        //this.delete(deletedByUserId);
         this.isDeleted = true;
     }
 

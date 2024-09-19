@@ -51,7 +51,8 @@ public class DeliveryPath extends Timestamped {
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
 
-    public void softDelete() {
+    public void softDelete(String deletedByUserId) {
+        //this.delete(deletedByUserId);
         this.isDeleted = true;
     }
 
