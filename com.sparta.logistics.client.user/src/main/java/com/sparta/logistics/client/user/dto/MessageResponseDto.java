@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageResponse {
+public class MessageResponseDto {
     private String receiver_slack_id;
     private String sender_slack_id;
     private String message;
 
-    public static MessageResponse from(Message message) {
-        return MessageResponse.builder()
+    public static MessageResponseDto from(Message message) {
+        return MessageResponseDto.builder()
                 .receiver_slack_id(message.getReceiver().getSlack_id())
                 .sender_slack_id(message.getSender().getSlack_id())
                 .message(message.getMessage())

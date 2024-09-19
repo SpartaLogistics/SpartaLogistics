@@ -1,6 +1,7 @@
 package com.sparta.logistics.client.user.service;
 
 import com.sparta.logistics.client.user.common.exception.UserException;
+import com.sparta.logistics.client.user.dto.UpdateUserRequestDto;
 import com.sparta.logistics.client.user.repository.UserRepository;
 import com.sparta.logistics.client.user.model.User;
 import com.sparta.logistics.client.user.model.UserVO;
@@ -40,7 +41,7 @@ public class UserService {
     }
     @Transactional(readOnly = true)
     public UserVO findByUsername(String username) throws UserException {
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByUsernameAndIsDeletedFalse(username)
                 .orElseThrow(() -> new UserException(ApiResultError.USER_NO_EXIST));
         return user.toUserVO();
     }
@@ -55,5 +56,12 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ApiResultError.USER_NO_EXIST));
         user.softDelete();
+    }
+
+    public UserVO updateUser(UpdateUserRequestDto userRequestDto, String username) throws UserException {
+        User user = userRepository.findByUsernameAndIsDeletedFalse(username)
+                .orElseThrow(() -> new UserException(ApiResultError.USER_NO_EXIST));
+        user.userUpdate(userRequestDto.getEmail(), userRequestDto.getSlackId());
+        return user.toUserVO();
     }
 }

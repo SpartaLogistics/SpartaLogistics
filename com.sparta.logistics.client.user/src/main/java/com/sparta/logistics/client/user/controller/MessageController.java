@@ -3,8 +3,8 @@ package com.sparta.logistics.client.user.controller;
 
 import com.sparta.logistics.client.user.common.exception.UserException;
 import com.sparta.logistics.client.user.dto.MessageRequestDto;
-import com.sparta.logistics.client.user.dto.MessageResponse;
-import com.sparta.logistics.client.user.dto.SearchRequest;
+import com.sparta.logistics.client.user.dto.MessageResponseDto;
+import com.sparta.logistics.client.user.dto.SearchRequestDto;
 import com.sparta.logistics.client.user.model.User;
 import com.sparta.logistics.client.user.model.validation.MessageValid0001;
 import com.sparta.logistics.client.user.model.validation.MessageValid0002;
@@ -38,7 +38,7 @@ public class MessageController extends CustomApiController {
         try {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            MessageResponse response = messageService.createMessage(request, user.getId());
+            MessageResponseDto response = messageService.createMessage(request, user.getId());
             apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
         } catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -48,7 +48,7 @@ public class MessageController extends CustomApiController {
 
     @GetMapping("/messages/search")
     public ApiResult searchMessages(
-            @RequestBody @Validated({MessageValid0002.class}) SearchRequest request,
+            @RequestBody @Validated({MessageValid0002.class}) SearchRequestDto request,
             Pageable pageable, @RequestHeader("X-User-Name") String username, Errors errors
     ) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
@@ -58,7 +58,7 @@ public class MessageController extends CustomApiController {
         try {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            Page<MessageResponse> messages = messageService.searchMessages(user.getId(), request.getReceiverId(), request.getContext(), pageable);
+            Page<MessageResponseDto> messages = messageService.searchMessages(user.getId(), request.getReceiverId(), request.getContext(), pageable);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(messages);
         } catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());

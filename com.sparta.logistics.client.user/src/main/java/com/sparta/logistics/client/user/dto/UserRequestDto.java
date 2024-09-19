@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequest {
+public class UserRequestDto {
     @Size(min = 4, max = 10)
     @Pattern(regexp = "^[a-z0-9]+$")
     @NotNull(groups = {UserValid0001.class},

@@ -1,7 +1,7 @@
 package com.sparta.logistics.client.user.controller;
 
 import com.sparta.logistics.client.user.common.exception.UserException;
-import com.sparta.logistics.client.user.dto.DeliveryManagerResponse;
+import com.sparta.logistics.client.user.dto.DeliveryManagerResponseDto;
 import com.sparta.logistics.client.user.dto.ManagerRequestDto;
 import com.sparta.logistics.client.user.model.User;
 import com.sparta.logistics.client.user.model.validation.DeliveryManagerValid0001;
@@ -29,7 +29,8 @@ public class DeliveryManagerController extends CustomApiController {
     private final UserRepository userRepository;
 
     @PostMapping
-    public ApiResult createDeliveryManager(@RequestBody @Validated({DeliveryManagerValid0001.class}) ManagerRequestDto requestDto, @RequestHeader("X-User-Name") String username, Errors errors) {
+    public ApiResult createDeliveryManager(@RequestBody @Validated({DeliveryManagerValid0001.class}) ManagerRequestDto requestDto,
+                                           @RequestHeader("X-User-Name") String username, Errors errors) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         log.info(username);
         if(errors.hasErrors()) {
@@ -38,7 +39,7 @@ public class DeliveryManagerController extends CustomApiController {
         try{
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            DeliveryManagerResponse response = deliveryManagerService.createDeliveryManager(requestDto, user.getId());
+            DeliveryManagerResponseDto response = deliveryManagerService.createDeliveryManager(requestDto, user.getId());
             apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
         } catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -50,7 +51,7 @@ public class DeliveryManagerController extends CustomApiController {
     public ApiResult getAllDeliveryManagers() {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try{
-            List<DeliveryManagerResponse> response = deliveryManagerService.getAllDeliveryManagers();
+            List<DeliveryManagerResponseDto> response = deliveryManagerService.getAllDeliveryManagers();
             apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
         } catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -62,7 +63,7 @@ public class DeliveryManagerController extends CustomApiController {
     public ApiResult getDeliveryManagerById(@PathVariable("deliveryId") UUID deliveryId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try{
-            DeliveryManagerResponse response = deliveryManagerService.getDeliveryManagerById(deliveryId);
+            DeliveryManagerResponseDto response = deliveryManagerService.getDeliveryManagerById(deliveryId);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
         } catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -77,7 +78,7 @@ public class DeliveryManagerController extends CustomApiController {
             return bindError(errors, apiResult);
         }
         try{
-            DeliveryManagerResponse response = deliveryManagerService.patchDeliveryManager(deliveryId, requestDto);
+            DeliveryManagerResponseDto response = deliveryManagerService.patchDeliveryManager(deliveryId, requestDto);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
         } catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -91,7 +92,7 @@ public class DeliveryManagerController extends CustomApiController {
         try{
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            DeliveryManagerResponse response = deliveryManagerService.deleteDeliveryManager(deliveryId, user.getId());
+            DeliveryManagerResponseDto response = deliveryManagerService.deleteDeliveryManager(deliveryId, user.getId());
             apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
         } catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
