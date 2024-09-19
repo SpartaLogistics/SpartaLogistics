@@ -1,8 +1,8 @@
 package com.sparta.logistics.client.hub.model;
 
-import com.sparta.logistics.client.hub.common.Timestamped;
 import com.sparta.logistics.client.hub.dto.CompanyRequestDto;
 import com.sparta.logistics.client.hub.enums.CompanyType;
+import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -52,8 +52,8 @@ public class Company extends Timestamped {
     }
 
     // 소프트 삭제 메서드
-    public void softDelete() {
-        this.isDeleted = true;
+    public void softDelete(String deletedByUserId) {
+        this.delete(deletedByUserId);
     }
 
     // 회사 수정용 메서드

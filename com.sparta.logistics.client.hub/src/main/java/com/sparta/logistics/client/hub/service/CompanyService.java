@@ -41,8 +41,6 @@ public class CompanyService {
 
         }
 
-        UserVO companyManger = userClient.findByUsername(requestDto.getCompanyManagerUsername());
-
         Company company = Company.createCompanyInfoBuilder()
                 .companyRequestDto(requestDto)
                 .managingHubId(managingHubId)
@@ -104,7 +102,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public void deleteCompany(UUID companyId, String username) throws HubException {
+    public void deleteCompany(UUID companyId, String username, String userId) throws HubException {
         Company company = companyRepository.findByCompanyId(companyId)
                 .orElseThrow(() -> new HubException(ApiResultError.COMPANY_NO_EXIST));
 
@@ -116,7 +114,7 @@ public class CompanyService {
         }
 
         // 논리적 삭제(soft Delete)
-        company.softDelete();
+        company.softDelete(userId);
         companyRepository.save(company);
     }
 

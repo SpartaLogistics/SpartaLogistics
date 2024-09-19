@@ -40,4 +40,10 @@ public abstract class Timestamped {
 
     private Long deletedBy;
 
+    // 소프트 삭제 메서드
+    public void delete(String deletedByUserId) {
+        this.deletedAt = LocalDateTime.now();
+        this.deletedBy = Long.valueOf(deletedByUserId);
+    }
+
 }

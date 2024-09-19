@@ -8,7 +8,7 @@ spring:
     name: gateway-service  # 애플리케이션 이름을 'gateway-service'로 설정
   cloud:
     gateway:
-      routes:  # Spring Cloud Gateway의 라우팅 설정
+      routes: # Spring Cloud Gateway의 라우팅 설정
         - id: user-service  # 라우트 식별자
           uri: lb://user-service  # 'order-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:
@@ -37,6 +37,10 @@ spring:
           uri: lb://hub-service  # 'product-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:
             - Path=/products/**
+        - id: hub-service  # 라우트 식별자
+          uri: lb://hub-service  # 'product-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
+          predicates:
+            - Path=/companies/**
         - id: order-service  # 라우트 식별자
           uri: lb://order-service  # 'order-service'라는 이름으로 로드 밸런싱된 서비스로 라우팅
           predicates:

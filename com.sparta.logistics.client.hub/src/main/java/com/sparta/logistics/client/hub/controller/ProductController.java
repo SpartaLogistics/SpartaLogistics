@@ -33,14 +33,16 @@ public class ProductController extends CustomApiController {
 
     @PostMapping
     @Operation(summary = "상품 생성 API", description = "상품을 생성합니다.")
-    public ApiResult createProduct(@RequestBody @Validated({ProductValid0001.class}) ProductRequestDto requestDto, Errors errors) {
+    public ApiResult createProduct(@RequestBody @Validated({ProductValid0001.class}) ProductRequestDto requestDto,
+                                   Errors errors,
+                                   @RequestHeader("X-User-Name") String username) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         if (errors.hasErrors()) {
             return bindError(errors, apiResult);
         }
 
         try {
-            ProductResponseDto responseDto = productService.createProduct(requestDto);
+            ProductResponseDto responseDto = productService.createProduct(requestDto, username);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -53,14 +55,15 @@ public class ProductController extends CustomApiController {
     @Operation(summary = "상품 수정 API", description = "삭제되지 않은 상품을 수정합니다.")
     public ApiResult updateProduct(@PathVariable UUID productId,
                                    @RequestBody ProductRequestDto requestDto,
-                                   Errors errors) {
+                                   Errors errors,
+                                   @RequestHeader("X-User-Name") String username) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         if (errors.hasErrors()) {
             return bindError(errors, apiResult);
         }
 
         try {
-            ProductResponseDto responseDto = productService.updateProduct(productId, requestDto);
+            ProductResponseDto responseDto = productService.updateProduct(productId, requestDto, username);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(responseDto);
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
@@ -101,11 +104,13 @@ public class ProductController extends CustomApiController {
 
     @DeleteMapping("/{productId}")
     @Operation(summary = "상품 삭제 API", description = "상품을 삭제합니다. (논리적 삭제)")
-    public ApiResult deleteProduct(@PathVariable UUID productId) {
+    public ApiResult deleteProduct(@PathVariable UUID productId,
+                                   @RequestHeader("X-User-Name") String username,
+                                   @RequestHeader("X-User-Id") String userId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
 
         try {
-            productService.deleteProduct(productId);
+            productService.deleteProduct(productId, username, userId);
             apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());

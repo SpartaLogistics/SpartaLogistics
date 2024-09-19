@@ -102,10 +102,10 @@ public class HubController extends CustomApiController {
     @RoleCheck(roles = "MASTER")
     @Operation(summary = "허브 삭제 API", description = "허브를 삭제합니다. 논리적 삭제")
     @DeleteMapping("/{id}")
-    public ApiResult deleteHub(@PathVariable("id") UUID hubId) {
+    public ApiResult deleteHub(@PathVariable("id") UUID hubId, @RequestHeader("X-User-Id") String userId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
-            hubService.deleteHub(hubId);
+            hubService.deleteHub(hubId, userId);
             apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());

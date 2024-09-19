@@ -94,10 +94,10 @@ public class HubPathController extends CustomApiController {
     @RoleCheck(roles = "MASTER")
     @DeleteMapping("/{hubPathId}")
     @Operation(summary = "허브 이동 경로 삭제 API", description = "허브 이동 경로를 삭제합니다. (논리적 삭제)")
-    public ApiResult deleteHubPath(@PathVariable UUID hubPathId) {
+    public ApiResult deleteHubPath(@PathVariable UUID hubPathId, @RequestHeader("X-User-Id") String userId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
-            hubPathService.deleteHubPath(hubPathId);
+            hubPathService.deleteHubPath(hubPathId, userId);
             apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());

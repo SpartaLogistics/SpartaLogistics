@@ -1,7 +1,7 @@
 package com.sparta.logistics.client.hub.model;
 
-import com.sparta.logistics.client.hub.common.Timestamped;
 import com.sparta.logistics.client.hub.dto.ProductRequestDto;
+import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -59,8 +59,8 @@ public class Product extends Timestamped {
     }
 
     // 소프트 삭제 메서드
-    public void softDelete() {
-        this.isDeleted = true;
+    public void softDelete(String deletedByUserId) {
+        this.delete(deletedByUserId);
     }
 
     // Company 엔티티의 ID를 반환하는 메서드

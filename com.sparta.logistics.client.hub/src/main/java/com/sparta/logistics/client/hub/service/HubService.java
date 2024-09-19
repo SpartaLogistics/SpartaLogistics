@@ -88,10 +88,10 @@ public class HubService {
 
     @Transactional
     @CacheEvict(cacheNames = {"hubAllCache", "hubCache"}, key = "#hubId")
-    public void deleteHub(UUID hubId) throws HubException {
+    public void deleteHub(UUID hubId, String userId) throws HubException {
         Hub hub = hubRepository.findByHubId(hubId)
                 .orElseThrow(() -> new HubException(ApiResultError.HUB_NO_EXIST));
-        hub.softDelete();
+        hub.softDelete(userId);
         hubRepository.save(hub);
     }
 
