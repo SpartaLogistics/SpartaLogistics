@@ -3,6 +3,7 @@ package com.sparta.logistics.client.user.service;
 import com.sparta.logistics.client.user.client.HubClient;
 import com.sparta.logistics.client.user.common.exception.UserException;
 import com.sparta.logistics.client.user.dto.DeliveryManagerResponseDto;
+import com.sparta.logistics.client.user.dto.HubResponseDto;
 import com.sparta.logistics.client.user.dto.ManagerRequestDto;
 import com.sparta.logistics.client.user.model.DeliveryManager;
 import com.sparta.logistics.client.user.model.User;
@@ -31,8 +32,8 @@ public class DeliveryManagerService {
         User user = userRepository.findById(userid)
                         .orElseThrow(()-> new UserException(ApiResultError.USER_NO_EXIST));
         ApiResult apiResult = hubClient.getDeliveryManagers(requestDto.getHub_name());
-        UUID hubId = UUID.randomUUID();
-//                apiResult.getResultData();
+        HubResponseDto hubResponseDto = apiResult.getResultDataAs(HubResponseDto.class);
+        UUID hubId = hubResponseDto.getHubId();
         DeliveryManager deliveryManager = DeliveryManager.createDeliveryManager(hubId, user, requestDto.getSlackId(),requestDto.getDeliveryManagerType());
         return DeliveryManagerResponseDto.of(deliveryManagerRepository.save(deliveryManager));
     }
