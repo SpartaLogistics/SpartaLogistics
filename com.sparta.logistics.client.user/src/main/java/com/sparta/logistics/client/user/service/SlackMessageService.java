@@ -29,11 +29,8 @@ public class SlackMessageService {
         this.messageService = messageService;
     }
 
-    //@Value("${slack.token}")
-    private String slackToken = "xoxb-7750835290354-7747978570325-KtuMLBYr0jJ4tjVf7BHvdP1e";
 
-
-    public MessageResponseDto sendMessage(MessageRequestDto messageRequestDto, Long userId)
+    public MessageResponseDto sendMessage(MessageRequestDto messageRequestDto, Long userId, String token)
             throws IOException, SlackApiException, UserException, MessageException {
         Long receiverId = messageRequestDto.getReceiverId();
         UserVO user = userService.getUserInfo(receiverId);
@@ -42,9 +39,8 @@ public class SlackMessageService {
         String messageText = messageRequestDto.getMessage();
 
         Slack slack = Slack.getInstance();
-        MethodsClient methods = slack.methods(slackToken);
+        MethodsClient methods = slack.methods(token);
 
-        log.info("Slack token: " + slackToken);
         ChatPostMessageRequest request = ChatPostMessageRequest.builder()
                 .channel(slackId)
                 .text(messageText)

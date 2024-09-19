@@ -44,7 +44,6 @@ public class Message extends Timestamped {
         this.receiver = receiver;
         this.message = message;
     }
-    
     public static Message createMessage(User sender, User receiver, String message) {
         return new Message(sender, receiver, message);
     }

@@ -1,7 +1,6 @@
 package com.sparta.logistics.client.user.controller;
 
 
-import com.slack.api.methods.SlackApiException;
 import com.sparta.logistics.client.user.common.exception.MessageException;
 import com.sparta.logistics.client.user.common.exception.UserException;
 import com.sparta.logistics.client.user.dto.MessageRequestDto;
@@ -21,17 +20,14 @@ import com.sparta.logistics.common.type.ApiResultError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.UUID;
 
-@Slf4j
 @RestController
 @RequestMapping("/messages")
 @RequiredArgsConstructor
@@ -44,24 +40,25 @@ public class MessageController extends CustomApiController {
 
     @Operation(summary = "Message 생성", description = "Message 생성")
     @PostMapping
-    public ApiResult createMessage(@RequestBody @Validated({MessageValid0001.class}) MessageRequestDto request, @RequestHeader("X-User-Name") String username, Errors errors) {
+    public ApiResult createMessage(@RequestBody @Validated({MessageValid0001.class}) MessageRequestDto request,
+                                   @RequestHeader("X-User-Name") String username,
+                                   @RequestHeader("slackToken") String token,
+                                   Errors errors){
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         if (errors.hasErrors()) {
             return bindError(errors, apiResult);
         }
         try {
-
             UserVO user = userService.findByUsername(username);
             //MessageResponseDto response = messageService.createMessage(request, user.getId());
-            MessageResponseDto response = slackMessageService.sendMessage(request, user.getId());
-
+            MessageResponseDto response = slackMessageService.sendMessage(request, user.getId(), token);
             apiResult.set(ApiResultError.NO_ERROR).setResultData(response);
-        } catch (UserException e) {
+        } catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
-        } catch (MessageException e){
+        } catch (MessageException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
-        } catch (IOException | SlackApiException e) {
-            apiResult.set(ApiResultError.ERROR_SERVER_ERROR).setResultMessage(e.getMessage());
+        } catch (Exception e){
+            apiResult.set(ApiResultError.ERROR_DEFAULT).setResultMessage(e.getMessage());
         }
         return apiResult;
     }
