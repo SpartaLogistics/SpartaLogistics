@@ -129,7 +129,7 @@ public class HubController extends CustomApiController {
         return apiResult;
     }
 
-    @GetMapping("delivery_managers/{hubName}")
+    @GetMapping("/delivery_managers/{hubName}")
     public ApiResult getDeliveryManagers(@PathVariable("hubName") String hubName) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {

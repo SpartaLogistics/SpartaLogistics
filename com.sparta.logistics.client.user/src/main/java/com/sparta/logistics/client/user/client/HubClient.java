@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "hub-service")
 public interface HubClient {
 
-    @GetMapping("delivery_managers/{name}")
-    ApiResult getDeliveryManagers(@PathVariable("name") String name);
+    @GetMapping("/hubs/delivery_managers/{hubName}")
+    ApiResult getDeliveryManagers(@PathVariable("hubName") String name);
     
 }
