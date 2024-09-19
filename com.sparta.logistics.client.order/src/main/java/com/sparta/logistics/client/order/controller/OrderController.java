@@ -2,10 +2,7 @@ package com.sparta.logistics.client.order.controller;
 
 import com.sparta.logistics.client.order.common.exception.OrderProcException;
 import com.sparta.logistics.client.order.common.type.OrderStatus;
-import com.sparta.logistics.client.order.dto.OrderRequestDto;
-import com.sparta.logistics.client.order.dto.OrderResponseDto;
-import com.sparta.logistics.client.order.dto.OrderSearchCriteria;
-import com.sparta.logistics.client.order.dto.OrderSearchDto;
+import com.sparta.logistics.client.order.dto.*;
 import com.sparta.logistics.client.order.service.OrderProcService;
 import com.sparta.logistics.client.order.service.OrderService;
 import com.sparta.logistics.client.order.model.Order;
@@ -143,6 +140,25 @@ public class OrderController extends CustomApiController {
         return apiResult;
     }
 
+
+    /**
+     * 주문 상세 정보를 AI를 이용하여 요약
+      * @param orderId
+     * @return
+     */
+    @Operation(summary = "주문 상세 ai", description = "주문 상세 ai 요약")
+    @GetMapping("/ai/{orderId}")
+    public ApiResult getOrderDetailWithAi(@PathVariable UUID orderId) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+
+        try {
+            OrderAIResponseDto retOrder = orderProcService.getOrderAI(orderId);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(retOrder);
+        } catch (OrderProcException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
+    }
 
 
 }
