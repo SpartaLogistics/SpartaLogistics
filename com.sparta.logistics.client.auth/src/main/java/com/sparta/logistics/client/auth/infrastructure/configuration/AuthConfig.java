@@ -31,6 +31,7 @@ public class AuthConfig {
                         // /auth/signIn 경로에 대한 접근을 허용합니다. 이 경로는 인증 없이 접근할 수 있습니다.
                         .requestMatchers("/auth/signin").permitAll()
                         .requestMatchers("/auth/signup").permitAll()
+                                .requestMatchers("/auth/v3/api-docs").permitAll()
                                 .requestMatchers(RESOURCE_WHITELIST).permitAll()
                                 .requestMatchers("/users/**").permitAll()
                                 .requestMatchers("/users").permitAll()

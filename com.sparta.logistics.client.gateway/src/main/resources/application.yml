@@ -63,6 +63,9 @@ springdoc:
     urls[3]:
       name: AI API
       url: http://localhost:19091/ai/v3/api-docs
+    urls[4]:
+      name: Auth API
+      url: http://localhost:19091/auth/v3/api-docs
 
 eureka:
   client:
