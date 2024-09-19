@@ -26,7 +26,7 @@ import java.util.UUID;
 @RequestMapping("/ai")
 @RequiredArgsConstructor
 @Tag(name = "AI 요청 API", description = "AI 요청 내역 관리 목적의 API Docs")
-public class AiController extends CustomApiController {
+public class AIController extends CustomApiController {
 
     private final AIService aiService;
 

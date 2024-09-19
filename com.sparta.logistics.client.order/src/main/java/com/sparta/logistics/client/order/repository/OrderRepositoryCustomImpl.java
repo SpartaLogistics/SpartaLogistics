@@ -54,6 +54,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
                 .select(qDeliveryPath)
                 .from(qDeliveryPath)
                 .where(qDeliveryPath.delivery.eq(delivery))
+                .orderBy(qDeliveryPath.sequence.asc())
                 .fetch();
 
         return OrderResponseDto.of(order, order.getOrderProducts(), delivery, deliveryPaths);

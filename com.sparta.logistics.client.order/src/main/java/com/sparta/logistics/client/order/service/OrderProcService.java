@@ -1,19 +1,19 @@
 package com.sparta.logistics.client.order.service;
 
 import com.sparta.logistics.client.order.client.HubClient;
-import com.sparta.logistics.client.order.client.dto.CompanyResponseDto;
-import com.sparta.logistics.client.order.client.dto.HubPathResponseDto;
-import com.sparta.logistics.client.order.client.dto.HubResponseDto;
-import com.sparta.logistics.client.order.client.dto.ProductResponseDto;
+import com.sparta.logistics.client.order.client.dto.*;
 import com.sparta.logistics.client.order.common.exception.OrderProcException;
 import com.sparta.logistics.client.order.common.type.OrderStatus;
 import com.sparta.logistics.client.order.dto.*;
+import com.sparta.logistics.common.client.AIClient;
+import com.sparta.logistics.common.client.UserClient;
+import com.sparta.logistics.common.client.dto.AIRequestDto;
+import com.sparta.logistics.common.client.dto.AIResponseDto;
 import com.sparta.logistics.common.kafka.ProductDeleted;
 import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.model.EventSerializer;
+import com.sparta.logistics.common.type.AICallService;
 import com.sparta.logistics.common.type.ApiResultError;
-import org.apache.kafka.shaded.com.google.protobuf.Api;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +37,8 @@ public class OrderProcService {
     private final HubClient hubClient;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final DeliveryPathService deliveryPathService;
+    private final AIClient aiClient;
+    private final UserClient userClient;
 
     /**
      * 주문 생성
@@ -47,7 +49,6 @@ public class OrderProcService {
     @Transactional(rollbackFor = Exception.class)
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto) throws OrderProcException {
         // 1.주문 생성
-
         OrderResponseDto order = orderService.createOrder(orderRequestDto);
         UUID orderId = order.getOrderId();
 
@@ -107,6 +108,11 @@ public class OrderProcService {
     @Transactional(rollbackFor = Exception.class)
     public OrderResponseDto deleteOrder(UUID orderId, OrderStatus orderStatus) throws OrderProcException {
         OrderResponseDto order = orderService.getOrder(orderId);
+
+        // 사용자 검증
+        //UserVO user = userClient.findByUsername(username);
+
+
 
         // 주문 삭제
         orderService.deleteOrder(orderId, orderStatus);
@@ -213,6 +219,12 @@ public class OrderProcService {
         return retOrder;
     }
 
+    /**
+     * 주문 상세 (주문 상품, 배달, 배달 경로 포함)
+     * @param orderId
+     * @return
+     * @throws OrderProcException
+     */
     public OrderResponseDto getOrderDetail(UUID orderId) throws OrderProcException {
         OrderResponseDto retOrder =  orderService.getOrderWithOrderProducts(orderId);
 
@@ -278,8 +290,69 @@ public class OrderProcService {
             retOrder.setProducts(productList);
         }
 
+        // 배송 경로 기록
+        {
+            List<DeliveryPathResponseDto> deliveryPathList = retOrder.getDeliveryPaths();
+
+            for(DeliveryPathResponseDto deliveryPathDto : deliveryPathList) {
+                if(null != deliveryPathDto.getArrivalId()) {
+                    UUID arrivalId = deliveryPathDto.getArrivalId();
+                    ApiResult arrivalHub = hubClient.getHubById(arrivalId);
+                    String arrivalName = "";
+                    if(arrivalHub.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
+                        arrivalName =  arrivalHub.getResultDataAs(HubResponseDto.class).getName();
+                        deliveryPathDto.setArrivalName(arrivalName);
+                    }
+                }
+
+                if(null != deliveryPathDto.getDepartureId()) {
+                    UUID departureId = deliveryPathDto.getDepartureId();
+                    ApiResult departureHub = hubClient.getHubById(departureId);
+                    String departureName = "";
+                    if(departureHub.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
+                        departureName =  departureHub.getResultDataAs(HubResponseDto.class).getName();
+                        deliveryPathDto.setDepartureName(departureName);
+                    }
+                }
+            }
+            retOrder.setDeliveryPaths(deliveryPathList);
+        }
+
         return retOrder;
     }
+
+    /**
+     * 주문정보 AI 요약
+     * @param orderId
+     * @return
+     * @throws OrderProcException
+     */
+    public OrderAIResponseDto getOrderAI(UUID orderId) throws OrderProcException {
+        OrderResponseDto order = this.getOrderDetail(orderId);
+        StringBuilder sb = new StringBuilder();
+        sb.append(order);
+        sb.append("이 주문내역을 요약해서 설명해줘. ");
+
+        AIRequestDto aiRequestDto = new AIRequestDto();
+        aiRequestDto.setService(AICallService.ORDER_SERVICE.toString());
+        aiRequestDto.setQuestion(sb.toString());
+        aiRequestDto.setUserId(1L);
+
+        OrderAIResponseDto orderAI = new OrderAIResponseDto();
+        ApiResult retAI = aiClient.createAI(aiRequestDto);
+        if(retAI.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
+            AIResponseDto aiResponse = retAI.getResultDataAs(AIResponseDto.class);
+
+            orderAI.setOrderId(orderId);
+            orderAI.setOverview(aiResponse.getContent());
+        } else {
+            throw new OrderProcException(ApiResultError.ERROR_AI_API);
+        }
+
+        return orderAI;
+    }
+
+
 
 
     private boolean validateProduct(List<OrderProductRequestDto> orderProductList) throws OrderProcException {

@@ -19,6 +19,8 @@ public class DeliveryPathResponseDto {
     private Long expectedTime;
     private Long actualDistance;
     private Long actualTime;
+    private String arrivalName;
+    private String departureName;
 
     public static DeliveryPathResponseDto of(DeliveryPath deliveryPath) {
         return DeliveryPathResponseDto.builder()
