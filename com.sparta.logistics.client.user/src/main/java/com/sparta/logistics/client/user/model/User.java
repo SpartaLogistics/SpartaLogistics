@@ -40,6 +40,10 @@ public class User extends Timestamped {
     public void softDelete() {
         this.isDeleted = true;
     }
+    public void userUpdate(String email, String slack_id) {
+        this.email = email;
+        this.slack_id = slack_id;
+    }
 
     protected User(String username, String password, String email, String slack_id, RoleType roleType) {
         this.username = username;

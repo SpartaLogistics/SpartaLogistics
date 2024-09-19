@@ -1,13 +1,14 @@
 package com.sparta.logistics.client.user.controller;
 
 import com.sparta.logistics.client.user.common.exception.UserException;
-import com.sparta.logistics.client.user.dto.UserRequest;
+import com.sparta.logistics.client.user.dto.UpdateUserRequestDto;
+import com.sparta.logistics.client.user.dto.UserRequestDto;
 import com.sparta.logistics.client.user.model.UserVO;
 import com.sparta.logistics.client.user.model.validation.UserValid0001;
+import com.sparta.logistics.client.user.model.validation.UserValid0002;
 import com.sparta.logistics.client.user.service.UserService;
 import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
-import com.sparta.logistics.common.model.RoleCheck;
 import com.sparta.logistics.common.type.ApiResultError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,9 +25,50 @@ import org.springframework.web.bind.annotation.*;
 public class UserController extends CustomApiController {
     private final UserService userService;
 
+    @Operation(summary = "userId로 유저 검색", description = "userId로 유저 검색")
+    @GetMapping("/{userId}")
+    public ApiResult getUserInfo(@PathVariable Long userId) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try{
+            UserVO user = userService.getUserInfo(userId);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(user);
+        } catch (UserException e){
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
+    }
+    @Operation(summary = "회원정보 수정", description = "회원 정보 수정")
+    @PatchMapping("/{userId}")
+    public ApiResult updateUserInfo(@RequestBody @Validated({UserValid0002.class}) UpdateUserRequestDto userRequestDto, @RequestHeader("X-User-Name")String username, Errors errors) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        if(errors.hasErrors()){
+            return bindError(errors, apiResult);
+        }
+        try{
+            userService.updateUser(userRequestDto, username);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(username);
+        }catch (UserException e){
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
+    }
+    @Operation(summary = "userId로 유저 삭제", description = "userId로 유저 삭제")
+    @DeleteMapping("/{userId}")
+    public ApiResult deleteUser(@PathVariable Long userId) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            userService.deleteUser(userId);
+            apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
+        } catch (UserException e){
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+
+        return apiResult;
+    }
+
     @Operation(summary = "유저 생성", description = "유저 생성")
     @PostMapping
-    public ApiResult createUser(@RequestBody @Validated({UserValid0001.class}) UserRequest userRequest, Errors errors) {
+    public ApiResult createUser(@RequestBody @Validated({UserValid0001.class}) UserRequestDto userRequest, Errors errors) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         if (errors.hasErrors()) {
             return bindError(errors, apiResult);
@@ -55,31 +97,7 @@ public class UserController extends CustomApiController {
         }
         return null;
     }
-    @RoleCheck(roles = {"CUSTOMER", "MASTER"})
-    @Operation(summary = "userId로 유저 검색", description = "userId로 유저 검색")
-    @GetMapping("/{userId}")
-    public ApiResult getUserInfo(@PathVariable Long userId) {
-        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-        try{
-            UserVO user = userService.getUserInfo(userId);
-            apiResult.set(ApiResultError.NO_ERROR).setResultData(user);
-        } catch (UserException e){
-            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
-        }
-        return apiResult;
-    }
-    @Operation(summary = "userId로 유저 삭제", description = "userId로 유저 삭제")
-    @DeleteMapping("/{userId}")
-    public ApiResult deleteUser(@PathVariable Long userId) {
-        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-        try {
-            userService.deleteUser(userId);
-            apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
-        } catch (UserException e){
-            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
-        }
+    
 
-        return apiResult;
-    }
 
 }

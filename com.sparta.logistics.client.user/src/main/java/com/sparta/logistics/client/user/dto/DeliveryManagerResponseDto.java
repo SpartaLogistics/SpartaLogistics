@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryManagerResponse {
+public class DeliveryManagerResponseDto {
     @NotNull(groups = {DeliveryManagerValid0001.class},
             message = "delivery_manager_id가 누락되었습니다."
     )
@@ -29,8 +29,8 @@ public class DeliveryManagerResponse {
     )
     private DeliveryManagerType delivery_manager_type;
 
-    public static DeliveryManagerResponse of(DeliveryManager deliveryManager) {
-        return DeliveryManagerResponse.builder()
+    public static DeliveryManagerResponseDto of(DeliveryManager deliveryManager) {
+        return DeliveryManagerResponseDto.builder()
                 .delivery_manager_id(deliveryManager.getId())
                 .slack_id(deliveryManager.getSlack_id())
                 .delivery_manager_type(deliveryManager.getType())
