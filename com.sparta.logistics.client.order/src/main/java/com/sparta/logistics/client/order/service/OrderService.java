@@ -92,7 +92,7 @@ public class OrderService {
 
     }
 
-    public OrderResponseDto getOrderWithOrderProducts(UUID orderId) {
+    public OrderResponseDto getOrderWithOrderProducts(UUID orderId) throws OrderProcException {
         return orderRepository.findByOrderIdWithOrderProducts(orderId);
     }
 

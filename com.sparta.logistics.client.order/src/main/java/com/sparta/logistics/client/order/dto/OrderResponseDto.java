@@ -1,7 +1,10 @@
 package com.sparta.logistics.client.order.dto;
 
 import com.sparta.logistics.client.order.common.type.OrderStatus;
+import com.sparta.logistics.client.order.model.Delivery;
+import com.sparta.logistics.client.order.model.DeliveryPath;
 import com.sparta.logistics.client.order.model.Order;
+import com.sparta.logistics.client.order.model.OrderProduct;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +13,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -20,8 +24,11 @@ public class OrderResponseDto {
     private UUID orderId;
     private UUID senderId;
     private UUID receiverId;
+    private String senderName;
+    private String receiverName;
     private UUID deliveryId;
     private OrderStatus status;
+    private String statusName;
     private boolean isDeleted;
     private String remark;
 
@@ -35,7 +42,25 @@ public class OrderResponseDto {
                 .orderId(order.getOrderId())
                 .senderId(order.getSenderId())
                 .receiverId(order.getReceiverId())
-                .deliveryId(order.getDeliveryId())
+                .status(order.getStatus())
+                .isDeleted(order.isDeleted())
+                .remark(order.getRemark())
+                .build();
+    }
+
+    public static OrderResponseDto of(Order order, List<OrderProduct> orderProducts,
+                                      Delivery delivery, List<DeliveryPath> deliveryPaths) {
+        return OrderResponseDto.builder()
+                .orderId(order.getOrderId())
+                .senderId(order.getSenderId())
+                .receiverId(order.getReceiverId())
+                .delivery(DeliveryResponseDto.of(delivery))
+                .products(orderProducts.stream()
+                        .map(OrderProductResponseDto::of)
+                        .collect(Collectors.toList()))
+                .deliveryPaths(deliveryPaths.stream()
+                        .map(DeliveryPathResponseDto::of)
+                        .collect(Collectors.toList()))
                 .status(order.getStatus())
                 .isDeleted(order.isDeleted())
                 .remark(order.getRemark())

@@ -2,11 +2,13 @@ package com.sparta.logistics.common.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.logistics.common.model.ApiResult;
+import com.sparta.logistics.common.model.UserVO;
 import com.sparta.logistics.common.type.ApiResultError;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 @Slf4j
@@ -56,8 +58,6 @@ public abstract class CustomApiController {
 
         return axRet.set(ApiResultError.ERROR_INTERNAL_API_PARAMETERS, dfErrMsg);
     }
-
-
 
 
 }

@@ -17,6 +17,7 @@ public class OrderProductResponseDto {
     private UUID orderId;
     private UUID orderProductId;
     private UUID productId;
+    private String productName;
     private int quantity;
 
     public static OrderProductResponseDto of(OrderProduct orderProduct) {

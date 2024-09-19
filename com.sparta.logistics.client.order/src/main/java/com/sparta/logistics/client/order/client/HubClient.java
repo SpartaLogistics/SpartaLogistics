@@ -60,8 +60,16 @@ public interface HubClient {
      * @return
      */
     @PatchMapping("/products/external/increase/{productId}")
-    public ApiResult increaseQuantity(@PathVariable("productId") UUID productId, @RequestParam int quantity);
+    ApiResult increaseQuantity(@PathVariable("productId") UUID productId, @RequestParam int quantity);
 
 
+    // ----- company -----
+    /**
+     * 업체 조회
+     * @param companyId
+     * @return
+     */
+    @GetMapping("/companies/{companyId}")
+    ApiResult getCompany(@PathVariable UUID companyId);
 }
 
