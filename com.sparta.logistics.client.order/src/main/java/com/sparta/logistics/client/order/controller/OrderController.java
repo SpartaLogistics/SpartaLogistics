@@ -110,11 +110,16 @@ public class OrderController extends CustomApiController {
     @GetMapping("/{id}")
     public ApiResult getOrder(@PathVariable("id") UUID orderId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
-        OrderResponseDto order = orderService.getOrderWithOrderProducts(orderId);
 
-        if(null != order) {
-            apiResult.set(ApiResultError.NO_ERROR).setResultData(order);
+        try {
+        //OrderResponseDto order = orderService.getOrderWithOrderProducts(orderId);
+        OrderResponseDto order = orderProcService.getOrderDetail(orderId);
+        apiResult.set(ApiResultError.NO_ERROR).setResultData(order);
+
+        } catch (OrderProcException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
         }
+
         return apiResult;
     }
 

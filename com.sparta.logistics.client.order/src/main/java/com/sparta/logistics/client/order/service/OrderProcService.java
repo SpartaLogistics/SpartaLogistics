@@ -1,6 +1,7 @@
 package com.sparta.logistics.client.order.service;
 
 import com.sparta.logistics.client.order.client.HubClient;
+import com.sparta.logistics.client.order.client.dto.CompanyResponseDto;
 import com.sparta.logistics.client.order.client.dto.HubPathResponseDto;
 import com.sparta.logistics.client.order.client.dto.HubResponseDto;
 import com.sparta.logistics.client.order.client.dto.ProductResponseDto;
@@ -11,6 +12,7 @@ import com.sparta.logistics.common.kafka.ProductDeleted;
 import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.model.EventSerializer;
 import com.sparta.logistics.common.type.ApiResultError;
+import org.apache.kafka.shaded.com.google.protobuf.Api;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -45,25 +47,28 @@ public class OrderProcService {
     @Transactional(rollbackFor = Exception.class)
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto) throws OrderProcException {
         // 1.주문 생성
+
         OrderResponseDto order = orderService.createOrder(orderRequestDto);
         UUID orderId = order.getOrderId();
 
         // 2.주문 상품 생성
-        List<OrderProductRequestDto> orderProductList = orderRequestDto.getOrderProducts();
-        if(validateProduct(orderProductList)) { // 상품 검증
-            List<OrderProductResponseDto> orderProducts = orderProductService.createOrderProducts(orderId, orderProductList);
-            order.setProducts(orderProducts);
-        }
+        {
+            List<OrderProductRequestDto> orderProductList = orderRequestDto.getOrderProducts();
+            if(validateProduct(orderProductList)) { // 상품 검증
+                List<OrderProductResponseDto> orderProducts = orderProductService.createOrderProducts(orderId, orderProductList);
+                order.setProducts(orderProducts);
+            }
 
-        // 2-1. 상품 수량 업데이트
-        for(OrderProductRequestDto orderProductRequestDto : orderProductList) {
-            UUID productId = orderProductRequestDto.getProductId();
-            int quantity = orderProductRequestDto.getQuantity();
-            ApiResult updateProduct = hubClient.externalDecreaseQuantity(productId, quantity);
+            // 2-1. 상품 수량 업데이트
+            for(OrderProductRequestDto orderProductRequestDto : orderProductList) {
+                UUID productId = orderProductRequestDto.getProductId();
+                int quantity = orderProductRequestDto.getQuantity();
+                ApiResult updateProduct = hubClient.externalDecreaseQuantity(productId, quantity);
 
-            // 상품 수량 업데이트 실패 시
-            if(updateProduct.getResultCode().equals("0000")) {
-                throw new OrderProcException(ApiResultError.ORDER_PRODUCT_SAVE_ERROR);
+                // 상품 수량 업데이트 실패 시
+                if(!updateProduct.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
+                    throw new OrderProcException(ApiResultError.ORDER_PRODUCT_SAVE_ERROR);
+                }
             }
         }
 
@@ -113,7 +118,7 @@ public class OrderProcService {
             int quantity = orderProductResponseDto.getQuantity();
 
             ApiResult updateProduct = hubClient.increaseQuantity(productId, quantity);
-            if (updateProduct.getResultCode().equals("0000")) {
+            if (!updateProduct.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
                 throw new OrderProcException(ApiResultError.ORDER_PRODUCT_SAVE_ERROR);
             }
 
@@ -170,6 +175,18 @@ public class OrderProcService {
         // 주문 품목 재저장
         List<OrderProductRequestDto> orderProductList = orderRequestDto.getOrderProducts();
         if(orderProductList != null) {
+
+            // 상품 수량 원복
+            List<OrderProductResponseDto> orderProducts = orderProductService.findByOrderId(orderId);
+            for (OrderProductResponseDto orderProductResponseDto : orderProducts) {
+                UUID productId = orderProductResponseDto.getProductId();
+                int quantity = orderProductResponseDto.getQuantity();
+
+                ApiResult updateProduct = hubClient.increaseQuantity(productId, quantity);
+                if (!updateProduct.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
+                    throw new OrderProcException(ApiResultError.ORDER_PRODUCT_SAVE_ERROR);
+                }
+            }
             orderProductService.deleteAndCreateProducts(orderId, orderProductList);
         }
 
@@ -195,6 +212,75 @@ public class OrderProcService {
 
         return retOrder;
     }
+
+    public OrderResponseDto getOrderDetail(UUID orderId) throws OrderProcException {
+        OrderResponseDto retOrder =  orderService.getOrderWithOrderProducts(orderId);
+
+        // company 조회
+        {
+            UUID senderId = retOrder.getSenderId();
+            UUID receiverId = retOrder.getReceiverId();
+
+            ApiResult senderCompany = hubClient.getCompany(senderId);
+            String senderName = "";
+            if(senderCompany.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
+                CompanyResponseDto sender = senderCompany.getResultDataAs(CompanyResponseDto.class);
+                senderName = sender.getName();
+            }
+            retOrder.setSenderName(senderName);
+
+            ApiResult receiverCompany = hubClient.getCompany(receiverId);
+            String receiverName = "";
+            if(receiverCompany.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
+                receiverName = receiverCompany.getResultDataAs(CompanyResponseDto.class).getName();
+            }
+            retOrder.setSenderName(receiverName);
+
+        }
+
+        // hub 조회
+        {
+            DeliveryResponseDto delivery = retOrder.getDelivery();
+            UUID departureId = delivery.getDepartureId();
+            UUID arrivalId = delivery.getArrivalID();
+
+            ApiResult departureHub = hubClient.getHubById(departureId);
+            String departureName = "";
+            if(departureHub.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
+                departureName = departureHub.getResultDataAs(HubResponseDto.class).getName();
+            }
+            retOrder.setSenderName(departureName);
+
+            ApiResult arrivalHub = hubClient.getHubById(arrivalId);
+            String arrivalName = "";
+            if(arrivalHub.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
+                arrivalName =  arrivalHub.getResultDataAs(HubResponseDto.class).getName();
+            }
+            retOrder.setReceiverName(arrivalName);
+
+        }
+
+        // products 조회
+        {
+            List<OrderProductResponseDto> productList = retOrder.getProducts();
+
+            for(OrderProductResponseDto productDto : productList) {
+                UUID productId = productDto.getProductId();
+                ApiResult product = hubClient.getProduct(productId);
+                String productName = "";
+                if(product.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
+                    productName = product.getResultDataAs(ProductResponseDto.class).getName();
+
+                }
+                productDto.setProductName(productName);
+            }
+
+            retOrder.setProducts(productList);
+        }
+
+        return retOrder;
+    }
+
 
     private boolean validateProduct(List<OrderProductRequestDto> orderProductList) throws OrderProcException {
         boolean isValid = false;

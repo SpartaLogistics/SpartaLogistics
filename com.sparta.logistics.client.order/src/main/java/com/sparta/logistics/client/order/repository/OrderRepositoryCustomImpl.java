@@ -1,14 +1,12 @@
 package com.sparta.logistics.client.order.repository;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.logistics.client.order.common.exception.OrderProcException;
 import com.sparta.logistics.client.order.dto.*;
 import com.sparta.logistics.client.order.model.*;
+import com.sparta.logistics.common.type.ApiResultError;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -29,19 +27,36 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public OrderResponseDto findByOrderIdWithOrderProducts(UUID orderId) {
+    public OrderResponseDto findByOrderIdWithOrderProducts(UUID orderId) throws OrderProcException {
         QOrder qOrder = QOrder.order;
         QOrderProduct qOrderProduct = QOrderProduct.orderProduct;
+        QDelivery qDelivery = QDelivery.delivery;
+        QDeliveryPath qDeliveryPath = QDeliveryPath.deliveryPath;
 
-        Order order = jpaQueryFactory
-                .selectFrom(qOrder)
+        Tuple result = jpaQueryFactory
+                .select(qOrder, qDelivery)
+                .from(qOrder)
                 .leftJoin(qOrder.orderProducts, qOrderProduct)
+                .leftJoin(qDelivery).on(qOrder.orderId.eq(qDelivery.orderId))
+                .leftJoin(qDelivery.deliveryPathsList, qDeliveryPath)
                 .where(qOrder.orderId.eq(orderId)
                         .and(qOrder.isDeleted.eq(false)))
-                .fetchOne();
+                .fetchFirst();
 
-        return OrderResponseDto.of(order);
+        if(result == null) {
+            throw new OrderProcException(ApiResultError.ORDER_NO_EXIST);
+        }
 
+        Order order = result.get(qOrder);
+        Delivery delivery = result.get(qDelivery);
+
+        List<DeliveryPath> deliveryPaths = jpaQueryFactory
+                .select(qDeliveryPath)
+                .from(qDeliveryPath)
+                .where(qDeliveryPath.delivery.eq(delivery))
+                .fetch();
+
+        return OrderResponseDto.of(order, order.getOrderProducts(), delivery, deliveryPaths);
     }
 
     // 검색 및 페이징 메서드
