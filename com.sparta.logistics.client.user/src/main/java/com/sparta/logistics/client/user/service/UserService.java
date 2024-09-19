@@ -70,5 +70,4 @@ public class UserService {
         user.userUpdate(userRequestDto.getEmail(), userRequestDto.getSlackId());
         return user.toUserVO();
     }
-
 }
