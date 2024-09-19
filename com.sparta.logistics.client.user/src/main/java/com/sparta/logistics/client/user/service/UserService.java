@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
+
     @Transactional
     public UserVO createUser(UserRequestDto userRequest) throws UserException {
         log.info("Attempting to create user: {}", userRequest.getUsername());
@@ -39,18 +41,21 @@ public class UserService {
             throw new IllegalArgumentException("User already exists");
         }
     }
+
     @Transactional(readOnly = true)
     public UserVO findByUsername(String username) throws UserException {
         User user = userRepository.findByUsernameAndIsDeletedFalse(username)
                 .orElseThrow(() -> new UserException(ApiResultError.USER_NO_EXIST));
         return user.toUserVO();
     }
+
     @Transactional(readOnly = true)
     public UserVO getUserInfo(Long userId) throws UserException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ApiResultError.USER_NO_EXIST));
         return user.toUserVO();
     }
+
     @Transactional
     public void deleteUser(Long userId) throws UserException {
         User user = userRepository.findById(userId)
@@ -58,6 +63,7 @@ public class UserService {
         user.softDelete();
     }
 
+    @Transactional
     public UserVO updateUser(UpdateUserRequestDto userRequestDto, String username) throws UserException {
         User user = userRepository.findByUsernameAndIsDeletedFalse(username)
                 .orElseThrow(() -> new UserException(ApiResultError.USER_NO_EXIST));
