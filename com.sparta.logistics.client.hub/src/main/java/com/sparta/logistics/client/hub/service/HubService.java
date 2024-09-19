@@ -120,4 +120,11 @@ public class HubService {
             throw new HubException(ApiResultError.HUB_SEQUENCE_DUPLICATE);
         }
     }
+
+    public HubResponseDto getDeliveryManagers(String hubName) throws HubException {
+        Hub hub = hubRepository.findByHubName(hubName)
+                .orElseThrow(() -> new HubException(ApiResultError.HUB_NO_EXIST));
+
+        return HubResponseDto.of(hub);
+    }
 }

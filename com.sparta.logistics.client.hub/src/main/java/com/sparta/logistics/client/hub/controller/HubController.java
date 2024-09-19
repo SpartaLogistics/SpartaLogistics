@@ -129,4 +129,16 @@ public class HubController extends CustomApiController {
         return apiResult;
     }
 
+    @GetMapping("delivery_managers/{hubName}")
+    public ApiResult getDeliveryManagers(@PathVariable("hubName") String hubName) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+        try {
+            HubResponseDto hubResponseDto = hubService.getDeliveryManagers(hubName);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(hubResponseDto);
+        } catch (HubException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+        return apiResult;
+    }
+
 }
