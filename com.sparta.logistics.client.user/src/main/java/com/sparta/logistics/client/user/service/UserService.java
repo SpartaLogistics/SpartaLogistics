@@ -51,16 +51,23 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserVO getUserInfo(Long userId) throws UserException {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new UserException(ApiResultError.USER_NO_EXIST));
         return user.toUserVO();
     }
 
     @Transactional
-    public void deleteUser(Long userId) throws UserException {
+    public UserVO deleteUser(Long userId, String userId2) throws UserException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ApiResultError.USER_NO_EXIST));
-        user.softDelete();
+        Long userId3 = Long.parseLong(userId2);
+        User user2 = userRepository.findById(userId3)
+                        .orElseThrow(() -> new UserException(ApiResultError.USER_NO_EXIST));
+        if(user.equals(user2)) {
+            user.softDelete();
+            user.delete(userId2);
+        }
+        return user.toUserVO();
     }
 
     @Transactional

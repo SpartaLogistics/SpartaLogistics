@@ -3,6 +3,7 @@ package com.sparta.logistics.client.user.controller;
 import com.sparta.logistics.client.user.common.exception.UserException;
 import com.sparta.logistics.client.user.dto.DeliveryManagerResponseDto;
 import com.sparta.logistics.client.user.dto.ManagerRequestDto;
+import com.sparta.logistics.client.user.dto.UpdateManagerDto;
 import com.sparta.logistics.client.user.model.User;
 import com.sparta.logistics.client.user.model.validation.DeliveryManagerValid0001;
 import com.sparta.logistics.client.user.model.validation.DeliveryManagerValid0002;
@@ -79,7 +80,7 @@ public class DeliveryManagerController extends CustomApiController {
 
     @Operation(summary = "DeliveryManager 수정", description = "DeliveryManager 수정")
     @PatchMapping("/{deliveryId}")
-    public ApiResult patchDeliveryManager(@PathVariable("deliveryId") UUID deliveryId, @RequestBody @Validated({DeliveryManagerValid0002.class}) ManagerRequestDto requestDto, Errors errors) {
+    public ApiResult patchDeliveryManager(@PathVariable("deliveryId") UUID deliveryId, @RequestBody @Validated({DeliveryManagerValid0002.class}) UpdateManagerDto requestDto, Errors errors) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         if(errors.hasErrors()) {
             return bindError(errors, apiResult);
