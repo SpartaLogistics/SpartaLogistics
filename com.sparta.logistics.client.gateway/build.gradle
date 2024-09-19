@@ -36,7 +36,7 @@ dependencies {
 	// common
 //	implementation project(":com.sparta.logistics.common")
 
-
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
