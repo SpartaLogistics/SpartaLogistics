@@ -2,6 +2,7 @@ package com.sparta.logistics.client.order.dto;
 
 import com.sparta.logistics.client.order.common.type.OrderStatus;
 import com.sparta.logistics.client.order.model.validation.OrderValid0001;
+import com.sparta.logistics.client.order.model.validation.OrderValid0002;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,6 +16,8 @@ import java.util.UUID;
 public class OrderRequestDto {
 
     // 주문정보
+    @NotNull(groups = {OrderValid0002.class},
+            message = "주문 ID가 누락되었습니다.")
     private UUID orderId;
 
     @NotNull(groups = {OrderValid0001.class},

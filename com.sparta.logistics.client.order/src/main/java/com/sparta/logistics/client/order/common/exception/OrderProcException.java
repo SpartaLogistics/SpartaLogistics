@@ -9,7 +9,7 @@ public class OrderProcException extends Exception {
     private final ApiResultError code;
 
     public OrderProcException(ApiResultError code) {
-        super();
+        super(code.getMessage());
         this.code = code;
     }
 

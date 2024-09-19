@@ -226,24 +226,26 @@ public class OrderProcService {
 
         // 배달 정보 저장
         DeliveryRequestDto deliveryInfo = orderRequestDto.getDeliveryInfo();
-        UUID deliveryId = deliveryInfo.getDeliveryId();
-        UUID arrivalId = deliveryInfo.getArrivalId();
-        UUID departureId = deliveryInfo.getDepartureId();
+        if(deliveryInfo != null) {
 
-        DeliveryResponseDto delivery = deliveryService.getDeliveryById(deliveryId);
+            UUID deliveryId = deliveryInfo.getDeliveryId();
+            UUID arrivalId = deliveryInfo.getArrivalId();
+            UUID departureId = deliveryInfo.getDepartureId();
 
-        if(arrivalId != delivery.getArrivalID() || departureId != delivery.getDepartureId()) {
-            deliveryPathService.deleteAllDeliveryPaths(deliveryId, userId);
+            DeliveryResponseDto delivery = deliveryService.getDeliveryById(deliveryId);
 
-            // 새 경로 저장
-            ApiResult retHubPaths = hubClient.getHubPaths(departureId, arrivalId);
-            List<HubPathResponseDto> hubPaths = retHubPaths.getResultDataAsList(HubPathResponseDto.class);
+            if (arrivalId != delivery.getArrivalID() || departureId != delivery.getDepartureId()) {
+                deliveryPathService.deleteAllDeliveryPaths(deliveryId, userId);
 
-            List<DeliveryPathRequestDto> deliveryPaths = hubPathToDeliveryPath(deliveryId, hubPaths);
+                // 새 경로 저장
+                ApiResult retHubPaths = hubClient.getHubPaths(departureId, arrivalId);
+                List<HubPathResponseDto> hubPaths = retHubPaths.getResultDataAsList(HubPathResponseDto.class);
 
-            deliveryPathService.createDeliveryPaths(deliveryId, deliveryPaths);
+                List<DeliveryPathRequestDto> deliveryPaths = hubPathToDeliveryPath(deliveryId, hubPaths);
+
+                deliveryPathService.createDeliveryPaths(deliveryId, deliveryPaths);
+            }
         }
-
         return retOrder;
     }
 
@@ -254,6 +256,8 @@ public class OrderProcService {
      * @throws OrderProcException
      */
     public OrderResponseDto getOrderDetail(UUID orderId) throws OrderProcException {
+        OrderResponseDto order = orderService.getOrder(orderId);
+
         OrderResponseDto retOrder =  orderService.getOrderWithOrderProducts(orderId);
 
         // company 조회

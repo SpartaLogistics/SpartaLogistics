@@ -3,6 +3,8 @@ package com.sparta.logistics.client.order.controller;
 import com.sparta.logistics.client.order.common.exception.OrderProcException;
 import com.sparta.logistics.client.order.common.type.OrderStatus;
 import com.sparta.logistics.client.order.dto.*;
+import com.sparta.logistics.client.order.model.validation.OrderValid0001;
+import com.sparta.logistics.client.order.model.validation.OrderValid0002;
 import com.sparta.logistics.client.order.service.OrderProcService;
 import com.sparta.logistics.client.order.service.OrderService;
 import com.sparta.logistics.client.order.model.Order;
@@ -41,7 +43,7 @@ public class OrderController extends CustomApiController {
      */
     @Operation(summary = "주문 생성", description = "주문 생성")
     @PostMapping
-    public ApiResult createOrder(@RequestBody @Validated OrderRequestDto orderRequestDto,
+    public ApiResult createOrder(@RequestBody @Validated({OrderValid0001.class}) OrderRequestDto orderRequestDto,
                                  Errors errors){
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         if (errors.hasErrors()) {
@@ -150,7 +152,7 @@ public class OrderController extends CustomApiController {
      */
     @Operation(summary = "주문 수정", description = "주문 수정")
     @PatchMapping
-    public ApiResult updateOrder(@RequestBody OrderRequestDto orderRequestDto,
+    public ApiResult updateOrder(@RequestBody @Validated({OrderValid0002.class}) OrderRequestDto orderRequestDto,
                                  @RequestHeader("X-User-Id") String userId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         log.info("login User {}", userId);
