@@ -82,6 +82,27 @@ public class OrderController extends CustomApiController {
     }
 
     /**
+     * 주문 자동 취소
+     * @param productId
+     * @return
+     */
+    @Operation(summary = "주문 삭제", description = "주문 삭제")
+    @DeleteMapping("/cancel/{productId}")
+    public ApiResult cancelOrder(@PathVariable("productId") UUID productId,
+                                 @RequestHeader("X-User-Id") String userId) {
+        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
+
+        try {
+            orderProcService.cancelOrder(productId, userId);
+            apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
+        } catch (OrderProcException e) {
+            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+        }
+
+        return apiResult;
+    }
+
+    /**
      * 주문 목록 조회(삭제건 제외)
      * @param orderSearchCriteria
      * @return

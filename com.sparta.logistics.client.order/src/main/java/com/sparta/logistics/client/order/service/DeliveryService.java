@@ -4,6 +4,7 @@ import com.sparta.logistics.client.order.common.exception.OrderProcException;
 import com.sparta.logistics.client.order.dto.DeliveryRequestDto;
 import com.sparta.logistics.client.order.dto.DeliveryResponseDto;
 import com.sparta.logistics.client.order.model.Delivery;
+import com.sparta.logistics.client.order.model.Order;
 import com.sparta.logistics.client.order.repository.DeliveryRepository;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
@@ -54,11 +55,10 @@ public class DeliveryService {
 
     @Transactional(rollbackFor = Exception.class)
     public DeliveryResponseDto deleteDeliveryByOrderId(UUID orderId, String userId) throws OrderProcException {
-        Delivery delivery = deliveryRepository.findByOrderIdAndIsDeletedFalse(orderId).orElseThrow(()->
-                new OrderProcException(ApiResultError.DELIVERY_NO_EXIST)
-        );
-        delivery.softDelete(userId);
+
+        Delivery delivery = deliveryRepository.findByOrderId(orderId);
         log.info("----------------> !!!!!!!  delete {}", delivery);
+        delivery.softDelete(userId);
         return DeliveryResponseDto.of(deliveryRepository.save(delivery));
     }
 

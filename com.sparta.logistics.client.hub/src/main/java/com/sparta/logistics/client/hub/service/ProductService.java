@@ -1,5 +1,6 @@
 package com.sparta.logistics.client.hub.service;
 
+import com.sparta.logistics.client.hub.client.OrderClient;
 import com.sparta.logistics.client.hub.common.exception.HubException;
 import com.sparta.logistics.client.hub.dto.ProductDetailResponseDto;
 import com.sparta.logistics.client.hub.dto.ProductRequestDto;
@@ -37,6 +38,7 @@ ProductService {
     private final ProductRepository productRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final UserClient userClient;
+    private final OrderClient orderClient;
 
     @Transactional
     public ProductResponseDto createProduct(ProductRequestDto requestDto, String username) throws HubException {
@@ -113,7 +115,9 @@ ProductService {
                 product.getPrice(),
                 userId
         );
+        //orderClient.cancelOrder(product.getProductId(), userId);
         log.info("product delete {}", productDeleted);
+
         kafkaTemplate.send("product-deleted", EventSerializer.serialize(productDeleted));
     }
 

@@ -52,7 +52,7 @@ public class DeliveryPath extends Timestamped {
     private Boolean isDeleted;
 
     public void softDelete(String deletedByUserId) {
-        //this.delete(deletedByUserId);
+        this.delete(deletedByUserId);
         this.isDeleted = true;
     }
 

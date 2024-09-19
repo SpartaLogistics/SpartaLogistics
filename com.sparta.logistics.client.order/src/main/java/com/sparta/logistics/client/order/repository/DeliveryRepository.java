@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
 
-    Optional<Delivery> findByOrderIdAndIsDeletedFalse(UUID orderId);
+    Delivery findByOrderId(UUID orderId);
     Optional<Delivery> findByDeliveryIdAndIsDeletedFalse(UUID deliveryId);
     List<Delivery> findAllByIsDeletedFalse();
 }

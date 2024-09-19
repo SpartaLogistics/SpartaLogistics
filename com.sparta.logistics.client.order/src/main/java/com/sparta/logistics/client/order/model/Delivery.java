@@ -58,7 +58,7 @@ public class Delivery extends Timestamped{
     private List<DeliveryPath> deliveryPathsList;
 
     public void softDelete(String deletedByUserId) {
-        //this.delete(deletedByUserId);
+        this.delete(deletedByUserId);
         this.isDeleted = true;
     }
 
