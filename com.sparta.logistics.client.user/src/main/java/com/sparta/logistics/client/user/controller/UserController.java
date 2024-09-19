@@ -47,8 +47,8 @@ public class UserController extends CustomApiController {
             return bindError(errors, apiResult);
         }
         try{
-            userService.updateUser(userRequestDto, username);
-            apiResult.set(ApiResultError.NO_ERROR).setResultData(username);
+            UserVO userVO = userService.updateUser(userRequestDto, username);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(userVO);
         }catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
         }
@@ -56,11 +56,11 @@ public class UserController extends CustomApiController {
     }
     @Operation(summary = "userId로 유저 삭제", description = "userId로 유저 삭제")
     @DeleteMapping("/{userId}")
-    public ApiResult deleteUser(@PathVariable Long userId) {
+    public ApiResult deleteUser(@PathVariable Long userId, @RequestHeader("X-User-Id") String userId2) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
-            userService.deleteUser(userId);
-            apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
+            UserVO userVO = userService.deleteUser(userId, userId2);
+            apiResult.set(ApiResultError.NO_ERROR).setResultData(userVO);
         } catch (UserException e){
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());
         }

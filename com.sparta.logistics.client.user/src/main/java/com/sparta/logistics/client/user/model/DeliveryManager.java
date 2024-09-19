@@ -1,6 +1,6 @@
 package com.sparta.logistics.client.user.model;
 
-import com.sparta.logistics.client.user.dto.ManagerRequestDto;
+import com.sparta.logistics.client.user.dto.UpdateManagerDto;
 import com.sparta.logistics.client.user.enums.DeliveryManagerType;
 import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
@@ -48,7 +48,7 @@ public class DeliveryManager extends Timestamped {
     public static DeliveryManager createDeliveryManager(UUID hub_id, User user, String slack_id, DeliveryManagerType type) {
         return new DeliveryManager(hub_id, user, slack_id, type);
     }
-    public void update(ManagerRequestDto managerRequestDto) {
+    public void update(UpdateManagerDto managerRequestDto) {
         if(managerRequestDto.getSlackId() != null) {
             this.slack_id = managerRequestDto.getSlackId();
         }
