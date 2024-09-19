@@ -15,5 +15,4 @@ public class AIRequestDto {
             message = "질문이 누락되었습니다.")
     private String question;
 
-    private String content;
 }

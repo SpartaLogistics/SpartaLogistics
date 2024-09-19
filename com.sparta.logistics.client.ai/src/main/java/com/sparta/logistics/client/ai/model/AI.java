@@ -39,7 +39,7 @@ public class AI extends Timestamped {
         this.userId = userId;
         this.service = requestDto.getService();
         this.question = requestDto.getQuestion();
-        this.content = requestDto.getContent();
+
         this.isDeleted = false;
     }
 

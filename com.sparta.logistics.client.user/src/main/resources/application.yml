@@ -2,8 +2,8 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/users
     driver-class-name: org.postgresql.Driver
-    username: user_service
-    password: user
+    username: postgres
+    password: postgres
     hikari:
       maximum-pool-size: 4
 
@@ -44,3 +44,7 @@ management:
       probability: 1.0
 server:
   port: 19093
+
+slack:
+
+  token: xoxb-7750835290354-7747978570325-KtuMLBYr0jJ4tjVf7BHvdP1e
