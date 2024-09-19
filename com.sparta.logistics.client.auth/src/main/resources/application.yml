@@ -1,4 +1,10 @@
 spring:
+  data:
+    redis:
+      host: localhost  # Redis 서버의 호스트명
+      port: 6379       # Redis 서버 포트
+      username: default
+      password: systempass
   datasource:
     url: jdbc:postgresql://localhost:5432/users
     driver-class-name: org.postgresql.Driver

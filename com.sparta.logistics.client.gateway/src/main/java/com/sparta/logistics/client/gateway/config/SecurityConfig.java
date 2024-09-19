@@ -1,5 +1,6 @@
 package com.sparta.logistics.client.gateway.config;
 
+import com.sparta.logistics.client.gateway.service.RedisService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -27,6 +28,11 @@ import java.util.Base64;
 public class SecurityConfig {
     @Value("${service.jwt.secret-key}") // Base64 Encode 한 SecretKey
     private String secretKeyString;
+    private final RedisService redisService;
+
+    public SecurityConfig(RedisService redisService) {
+        this.redisService = redisService;
+    }
     private static final String[] RESOURCE_WHITELIST = {
             "/v3/**", // v3 : SpringBoot 3(없으면 swagger 예시 api 목록 제공)
             "/swagger-ui/**",
@@ -38,13 +44,13 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable) // CSRF 비활성화
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
-                .addFilterBefore(jwtAuthenticationFilter(), SecurityWebFiltersOrder.HTTP_BASIC);
+                .addFilterBefore(jwtAuthenticationFilter(redisService), SecurityWebFiltersOrder.HTTP_BASIC);
         return http.build();
     }
 //    .sessionManagement(session -> session
 //            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless Session
     @Bean
-    public WebFilter jwtAuthenticationFilter() {
+    public WebFilter jwtAuthenticationFilter(RedisService redisService) {
         // TODO: 게이트웨이 jwt 인증 처리 필터
         return (exchange, chain) -> {
 
@@ -74,7 +80,7 @@ public class SecurityConfig {
                     ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
                             .header("X-User-Name", username)
                             .header("X-User-Id", String.valueOf(userId))// 사용자명 헤더 추가
-                            .header("X-User-Roles", Role)  // 권한 정보를 claims에서 직접 가져옵니다
+                            .header("X-User-Roles", String.valueOf(redisService.getValue(username)))  // 권한 정보를 claims에서 직접 가져옵니다
                             .build();
 
                     // 수정된 요청으로 필터 체인 계속 처리

@@ -2,6 +2,12 @@ server:
   port: 19091  # 게이트웨이 서비스가 실행될 포트 번호
 
 spring:
+  data:
+    redis:
+      host: localhost  # Redis 서버의 호스트명
+      port: 6379       # Redis 서버 포트
+      username: default
+      password: systempass
   main:
     web-application-type: reactive  # Spring 애플리케이션이 리액티브 웹 애플리케이션으로 설정됨
   application:

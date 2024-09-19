@@ -9,6 +9,7 @@ import com.sparta.logistics.client.user.model.validation.UserValid0002;
 import com.sparta.logistics.client.user.service.UserService;
 import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
+import com.sparta.logistics.common.model.RoleCheck;
 import com.sparta.logistics.common.type.ApiResultError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController extends CustomApiController {
     private final UserService userService;
 
+    @RoleCheck(roles={"CUSTOMER"})
     @Operation(summary = "userId로 유저 검색", description = "userId로 유저 검색")
     @GetMapping("/{userId}")
     public ApiResult getUserInfo(@PathVariable Long userId) {
