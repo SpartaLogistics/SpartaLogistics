@@ -29,8 +29,9 @@ public class SlackMessageService {
         this.messageService = messageService;
     }
 
-    @Value("${slack.token}")
-    private String slackToken;
+    //@Value("${slack.token}")
+    private String slackToken = "xoxb-7750835290354-7747978570325-KtuMLBYr0jJ4tjVf7BHvdP1e";
+
 
     public MessageResponseDto sendMessage(MessageRequestDto messageRequestDto, Long userId)
             throws IOException, SlackApiException, UserException, MessageException {

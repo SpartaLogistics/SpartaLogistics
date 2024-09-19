@@ -46,5 +46,4 @@ server:
   port: 19093
 
 slack:
-
-  token: xoxb-7750835290354-7747978570325-KtuMLBYr0jJ4tjVf7BHvdP1e
+  #token: xoxb-7750835290354-7747978570325-KtuMLBYr0jJ4tjVf7BHvdP1e
