@@ -21,6 +21,10 @@ public class DeliveryManagerResponseDto {
     )
     private UUID delivery_manager_id;
     @NotNull(groups = {DeliveryManagerValid0001.class},
+            message = "hub_id가 누락되었습니다."
+    )
+    private UUID hub_id;
+    @NotNull(groups = {DeliveryManagerValid0001.class},
             message = "slack_id가 누락되었습니다."
     )
     private String slack_id;
@@ -31,6 +35,7 @@ public class DeliveryManagerResponseDto {
 
     public static DeliveryManagerResponseDto of(DeliveryManager deliveryManager) {
         return DeliveryManagerResponseDto.builder()
+                .hub_id(deliveryManager.getHub_id())
                 .delivery_manager_id(deliveryManager.getId())
                 .slack_id(deliveryManager.getSlack_id())
                 .delivery_manager_type(deliveryManager.getType())
