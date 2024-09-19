@@ -13,7 +13,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -121,16 +123,29 @@ public class HubPathController extends CustomApiController {
             @RequestParam(required = false) UUID arrivalHubId,
             @RequestParam(required = false) Long minDuration,
             @RequestParam(required = false) Long maxDuration,
-            Pageable pageable
+            @RequestParam(defaultValue = "createdAt,desc") String sort,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page
     ) {
-        ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
+            String[] sortParams = sort.split(",");
+            String sortBy = sortParams[0];
+            String direction = sortParams.length > 1 ? sortParams[1] : "desc";
+
+            if (!sortBy.equals("createdAt") && !sortBy.equals("updatedAt") && !sortBy.equals("duration")) {
+                sortBy = "createdAt";
+            }
+
+            Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+            int validSize = (size == 30 || size == 50) ? size : 10;
+
+            Pageable pageable = PageRequest.of(page, validSize, Sort.by(sortDirection, sortBy));
             Page<HubPathResponseDto> paths = hubPathService.searchHubPaths(departureHubId, arrivalHubId, minDuration, maxDuration, pageable);
-            apiResult.set(ApiResultError.NO_ERROR).setResultData(paths);
-        } catch (HubException e) {
-            apiResult.set(e.getCode()).setResultMessage(e.getMessage());
+
+            return new ApiResult(ApiResultError.NO_ERROR).setResultData(paths);
+        } catch (Exception e) {
+            return new ApiResult(ApiResultError.ERROR_PARAMETERS).setResultMessage(e.getMessage());
         }
-        return apiResult;
     }
 
 

@@ -1,6 +1,11 @@
 package com.sparta.logistics.client.hub.repository;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.logistics.client.hub.model.Hub;
 import com.sparta.logistics.client.hub.model.HubPath;
@@ -9,6 +14,7 @@ import com.sparta.logistics.client.hub.model.QHubPath;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
@@ -86,32 +92,36 @@ public class HubPathRepositoryImpl extends QuerydslRepositorySupport implements 
     @Override
     public Page<HubPath> searchPaths(UUID departureHubId, UUID arrivalHubId, Long minDuration, Long maxDuration, Pageable pageable) {
         QHubPath hubPath = QHubPath.hubPath;
-        QHub departureHub = QHub.hub;
-        QHub arrivalHub = new QHub("arrivalHub");
 
-        List<HubPath> content = queryFactory
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(hubPath.isDeleted.isFalse());
+
+        if (departureHubId != null) builder.and(hubPath.departureHub.hubId.eq(departureHubId));
+        if (arrivalHubId != null) builder.and(hubPath.arrivalHub.hubId.eq(arrivalHubId));
+        if (minDuration != null) builder.and(hubPath.duration.goe(minDuration));
+        if (maxDuration != null) builder.and(hubPath.duration.loe(maxDuration));
+
+        JPAQuery<HubPath> query = queryFactory
                 .selectFrom(hubPath)
-                .join(hubPath.departureHub, departureHub).fetchJoin()
-                .join(hubPath.arrivalHub, arrivalHub).fetchJoin()
-                .where(
-                        departureHubIdEq(departureHubId),
-                        arrivalHubIdEq(arrivalHubId),
-                        durationBetween(minDuration, maxDuration),
-                        hubPath.isDeleted.isFalse()
-                )
+                .join(hubPath.departureHub).fetchJoin()
+                .join(hubPath.arrivalHub).fetchJoin()
+                .where(builder)
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+                .limit(pageable.getPageSize());
 
-        long total = queryFactory
-                .selectFrom(hubPath)
-                .where(
-                        departureHubIdEq(departureHubId),
-                        arrivalHubIdEq(arrivalHubId),
-                        durationBetween(minDuration, maxDuration),
-                        hubPath.isDeleted.isFalse()
-                )
-                .fetchCount();
+        for (Sort.Order order : pageable.getSort()) {
+            PathBuilder<HubPath> pathBuilder = new PathBuilder<>(HubPath.class, "hubPath");
+            if (order.getProperty().equals("duration")) {
+                query.orderBy(new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC,
+                        pathBuilder.getNumber(order.getProperty(), Long.class)));
+            } else {
+                query.orderBy(new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC,
+                        pathBuilder.getString(order.getProperty())));
+            }
+        }
+
+        List<HubPath> content = query.fetch();
+        long total = query.fetchCount();
 
         return new PageImpl<>(content, pageable, total);
     }
