@@ -20,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Order {
+public class Order extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -52,7 +52,7 @@ public class Order {
 
     // 소프트 삭제 메서드
     public void softDelete(String deletedByUserId) {
-        //this.delete(deletedByUserId);
+        this.delete(deletedByUserId);
         this.isDeleted = true;
     }
 

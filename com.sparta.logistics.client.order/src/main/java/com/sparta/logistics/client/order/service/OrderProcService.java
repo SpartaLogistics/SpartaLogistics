@@ -150,16 +150,19 @@ public class OrderProcService {
         return order;
     }
 
-    @Transactional
-    @KafkaListener(topics = "product-deleted", groupId = "product-service")
-    public void listenProductDeleted(String message) throws OrderProcException {
-        ProductDeleted event = EventSerializer.deserialize(message, ProductDeleted.class);
-
-        // 사용자 ID 설정
-        customAuditorAware.setCurrentUser(event.getUserId());
-
-        this.cancelOrderIfProductDeleted(event);
-
+//    @Transactional
+//    @KafkaListener(topics = "product-deleted", groupId = "product-service")
+//    public void listenProductDeleted(String message) throws OrderProcException {
+//        ProductDeleted event = EventSerializer.deserialize(message, ProductDeleted.class);
+//
+//        // 사용자 ID 설정
+//        customAuditorAware.setCurrentUser(event.getUserId());
+//
+//        //this.cancelOrderIfProductDeleted(event);
+//
+//    }
+    public void cancelOrder(UUID productId, String userId) throws OrderProcException {
+        this.cancelOrderIfProductDeleted(productId, userId);
     }
 
 
@@ -169,43 +172,19 @@ public class OrderProcService {
      * @throws OrderProcException
      */
     @Transactional(rollbackFor = Exception.class)
-    //@KafkaListener(topics = "product-deleted", groupId = "product-service")
-    public void cancelOrderIfProductDeleted(ProductDeleted deletedEvent) throws OrderProcException {
+    @KafkaListener(topics = "product-deleted", groupId = "product-service")
+    public void cancelOrderIfProductDeleted(UUID delProductId, String userId) throws OrderProcException {
         log.debug("--------------->> 상품 삭제로 인한 주문 삭제");
 
-        String userId = deletedEvent.getUserId();
         log.info("Current Thread: {}", Thread.currentThread().getName());
 
-        UUID delProductId = deletedEvent.getProductId();
+        //UUID delProductId = deletedEvent.getProductId();
         List<UUID> deleteOrderList = orderProductService.findDistinctOrderIdsByProductId(delProductId);
 
         for(UUID orderId : deleteOrderList) {
             log.info("delete Order {}", orderId);
-            //this.deleteOrder(orderId, OrderStatus.ORDER_AUTO_CANCELED, userId);
+            this.deleteOrder(orderId, OrderStatus.ORDER_AUTO_CANCELED, userId);
 
-            List<OrderProductResponseDto> orderProducts = orderProductService.findByOrderId(orderId);
-            log.info("[Deleted order with id] {}", orderProducts);
-            if(!orderProducts.isEmpty()) {
-                for (OrderProductResponseDto orderProductResponseDto : orderProducts) {
-                    log.info("orderProductResponseDto {}", orderProductResponseDto);
-                    UUID productId = orderProductResponseDto.getProductId();
-                    int quantity = orderProductResponseDto.getQuantity();
-
-                    ApiResult updateProduct = hubClient.increaseQuantity(productId, quantity);
-                    if (!updateProduct.getResultCode().equals(ApiResultError.NO_ERROR.toString())) {
-                        throw new OrderProcException(ApiResultError.ORDER_PRODUCT_SAVE_ERROR);
-                    }
-
-                }
-            }
-            orderProductService.deleteOrderProducts(orderId, userId);
-
-            // 배달 삭제
-            DeliveryResponseDto deliveryResponseDto = deliveryService.deleteDeliveryByOrderId(orderId, userId);
-
-            // 배달 경로 삭제
-            UUID deliveryId = deliveryResponseDto.getDeliveryId();
-            deliveryPathService.deleteAllDeliveryPaths(deliveryId, userId);
         }
 
     }

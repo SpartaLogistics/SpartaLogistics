@@ -43,7 +43,7 @@ public class OrderProduct extends Timestamped {
     private Order order;
 
     public void softDelete(String deletedByUserId) {
-        //this.delete(deletedByUserId);
+        this.delete(deletedByUserId);
         this.isDeleted = true;
     }
 
