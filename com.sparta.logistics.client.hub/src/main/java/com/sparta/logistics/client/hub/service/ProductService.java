@@ -7,8 +7,11 @@ import com.sparta.logistics.client.hub.dto.ProductResponseDto;
 import com.sparta.logistics.client.hub.model.Company;
 import com.sparta.logistics.client.hub.model.Product;
 import com.sparta.logistics.client.hub.repository.ProductRepository;
+import com.sparta.logistics.common.client.UserClient;
 import com.sparta.logistics.common.kafka.ProductDeleted;
 import com.sparta.logistics.common.model.EventSerializer;
+import com.sparta.logistics.common.model.RoleType;
+import com.sparta.logistics.common.model.UserVO;
 import com.sparta.logistics.common.type.ApiResultError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +36,15 @@ ProductService {
     private final CompanyService companyService;
     private final ProductRepository productRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final UserClient userClient;
 
     @Transactional
-    public ProductResponseDto createProduct(ProductRequestDto requestDto) throws HubException {
+    public ProductResponseDto createProduct(ProductRequestDto requestDto, String username) throws HubException {
+        UserVO currentUser = userClient.findByUsername(username);
         //상품 업체가 존재하는지 확인
         Company company = companyService.findCompanyById(requestDto.getCompanyId());
+
+        validateUserPermission(currentUser, company);
 
         // 상품 관리 허브 ID를 확인하여 존재하는지 확인
         hubService.findHubById(company.getManagingHubId());
@@ -52,9 +59,13 @@ ProductService {
     }
 
     @Transactional
-    public ProductResponseDto updateProduct(UUID productId, ProductRequestDto requestDto) throws HubException {
+    public ProductResponseDto updateProduct(UUID productId, ProductRequestDto requestDto, String username) throws HubException {
+        UserVO currentUser = userClient.findByUsername(username);
         Product product = productRepository.findByProductId(productId)
                 .orElseThrow(() -> new HubException(ApiResultError.PRODUCT_NO_EXIST));
+
+        validateUserPermission(currentUser, product.getCompany());
+
 
         Company company = null;
         if (requestDto.getCompanyId() != null) {
@@ -82,11 +93,14 @@ ProductService {
     }
 
     @Transactional
-    public void deleteProduct(UUID productId) throws HubException {
+    public void deleteProduct(UUID productId, String username, String userId) throws HubException {
+        UserVO currentUser = userClient.findByUsername(username);
         Product product = productRepository.findByProductId(productId)
                 .orElseThrow(() -> new HubException(ApiResultError.PRODUCT_NO_EXIST));
 
-        product.softDelete();
+        validateUserPermission(currentUser, product.getCompany());
+
+        product.softDelete(userId);
         productRepository.save(product);
 
         // 상품 삭제 이벤트 발행
@@ -124,22 +138,6 @@ ProductService {
         return ProductResponseDto.of(product);
     }
 
-//    @Transactional
-//    @KafkaListener(topics = "order-canceled", groupId = "product-service")
-//    // TODO : 주문 취소시 "order-canceled" 이벤트 구독중, 상품 수량 원복 필요 (productId, quantity)
-//    public ProductResponseDto increaseQuantity(String message) throws HubException{
-//        // 메시지를 ProductDeleted 객체로 역직렬화
-//        ProductDeleted event = EventSerializer.deserialize(message, ProductDeleted.class);
-//
-//            Product product = productRepository.findByProductId(event.getProductId())
-//                    .orElseThrow(() -> new HubException(ApiResultError.PRODUCT_NO_EXIST));
-//
-//            int newQuantity = product.getQuantity() + event.getQuantity();
-//            product.setQuantity(newQuantity);
-//            productRepository.save(product);
-//        return null;
-//    }
-
     @Transactional
     public ProductResponseDto decreaseQuantity(UUID productId, int quantity) throws HubException {
         log.info("Decreasing quantity for product: {} by {}", productId, quantity);
@@ -166,5 +164,20 @@ ProductService {
 
         // 역직렬화된 객체 사용
         log.info("@@@ {}", event.getProductId());
+    }
+
+
+    private void validateUserPermission(UserVO currentUser, Company company) throws HubException {
+        if (currentUser.getRole() == RoleType.OWNER) {
+            // 허브 관리자: 자신의 허브에 소속된 업체의 상품만 관리 가능
+            if (!currentUser.getUsername().equals(company.getManagingHub().getManagerUsername())) {
+                throw new HubException(ApiResultError.NOT_YOUR_HUB_COMPANY);
+            }
+        } else if (currentUser.getRole() == RoleType.CUSTOMER) {
+            // 허브 업체: 자신의 업체의 상품만 관리 가능
+            if (!currentUser.getUsername().equals(company.getCompanyManagerUsername())) {
+                throw new HubException(ApiResultError.NOT_YOUR_COMPANY);
+            }
+        }
     }
 }

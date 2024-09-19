@@ -75,7 +75,6 @@ public class CompanyController extends CustomApiController {
         return apiResult;
     }
 
-    @RoleCheck(roles = {"MASTER", "OWNER"})
     @PatchMapping("/{companyId}")
     @Operation(summary = "업체 수정 API", description = "삭제되지 않은 업체 목록을 수정합니다.")
     public ApiResult updateCompany(@PathVariable UUID companyId,
@@ -95,10 +94,11 @@ public class CompanyController extends CustomApiController {
     @DeleteMapping("/{companyId}")
     @Operation(summary = "업체 삭제 API", description = "업체를 삭제합니다. (논리적 삭제)")
     public ApiResult deleteCompany(@PathVariable UUID companyId,
-                                   @RequestHeader("X-User-Name") String username) {
+                                   @RequestHeader("X-User-Name") String username,
+                                   @RequestHeader("X-User-Id") String userId) {
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
         try {
-            companyService.deleteCompany(companyId, username);
+            companyService.deleteCompany(companyId, username, userId);
             apiResult.set(ApiResultError.NO_ERROR).setResultMessage("삭제되었습니다.");
         } catch (HubException e) {
             apiResult.set(e.getCode()).setResultMessage(e.getMessage());

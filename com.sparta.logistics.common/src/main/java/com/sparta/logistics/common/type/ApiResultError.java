@@ -45,8 +45,8 @@ public enum ApiResultError {
 
     COMPANY_NO_EXIST("6000", "업체가 존재하지 않습니다."),
     INVALID_COMPANY_TYPE("6001", "유효하지 않은 업체 유형입니다."),
-    NOT_YOUR_HUB_COMPANY("6002", "자신의 허브에 소속된 업체만 수정 가능합니다."),
-    NOT_YOUR_COMPANY("6003", "자신의 업체만 수정 가능합니다."),
+    NOT_YOUR_HUB_COMPANY("6002", "자신의 허브에 소속된 업체만 관리 가능합니다."),
+    NOT_YOUR_COMPANY("6003", "자신의 업체만 관리 가능합니다."),
 
     PRODUCT_NO_EXIST("7001", "상품이 존재하지 않습니다."),
     STOCK_NO_EXIST("7100", "수량이 부족합니다."),

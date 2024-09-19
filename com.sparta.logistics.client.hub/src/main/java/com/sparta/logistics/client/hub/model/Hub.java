@@ -61,8 +61,8 @@ public class Hub extends Timestamped {
     }
 
     // 소프트 삭제 메서드
-    public void softDelete() {
-        this.isDeleted = true;
+    public void softDelete(String deletedByUserId) {
+        this.delete(deletedByUserId);
     }
 
     // 허브 수정용 메서드

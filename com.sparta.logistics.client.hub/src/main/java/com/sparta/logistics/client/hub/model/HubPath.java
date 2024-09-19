@@ -1,7 +1,7 @@
 package com.sparta.logistics.client.hub.model;
 
-import com.sparta.logistics.client.hub.common.Timestamped;
 import com.sparta.logistics.client.hub.dto.HubPathRequestDto;
+import com.sparta.logistics.common.model.Timestamped;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -56,7 +56,7 @@ public class HubPath extends Timestamped {
     }
 
     // 소프트 삭제 메서드
-    public void softDelete() {
-        this.isDeleted = true;
+    public void softDelete(String deletedByUserId) {
+        this.delete(deletedByUserId);
     }
 }

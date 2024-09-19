@@ -68,11 +68,11 @@ public class HubPathService {
 
     @CacheEvict(cacheNames = {"hubPathCache", "hubPathAllCache"}, key = "#hubPathId")
     @Transactional
-    public void deleteHubPath(UUID hubPathId) throws HubException {
+    public void deleteHubPath(UUID hubPathId, String userId) throws HubException {
         HubPath hubPath = hubPathRepository.findByHubPathIdWithHubs(hubPathId)
                 .orElseThrow(() -> new HubException(ApiResultError.HUB_PATH_NO_EXIST));
 
-        hubPath.softDelete();
+        hubPath.softDelete(userId);
         hubPathRepository.save(hubPath);
     }
 
