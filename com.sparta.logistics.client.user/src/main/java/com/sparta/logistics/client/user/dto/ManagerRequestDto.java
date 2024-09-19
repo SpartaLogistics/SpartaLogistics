@@ -15,6 +15,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ManagerRequestDto {
 
+    @Schema(description = "hub_name", example = "pusan")
+    @NotNull(groups = {DeliveryManagerValid0001.class},
+            message = "허브명이 누락되었습니다."
+    )
+    private String hub_name;
+
     @Schema(description = "slack_id", example = "alfn8989")
     @NotNull(groups = {DeliveryManagerValid0001.class},
             message = "slack_id가 누락되었습니다."

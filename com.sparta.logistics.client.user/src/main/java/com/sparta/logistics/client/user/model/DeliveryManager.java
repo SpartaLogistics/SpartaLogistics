@@ -20,7 +20,9 @@ public class DeliveryManager extends Timestamped {
     @Column(name = "delivery_manager_id")
     private UUID id;
 
-    //hubid
+    @Column(nullable = false)
+    private UUID hub_id;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -37,13 +39,14 @@ public class DeliveryManager extends Timestamped {
         this.isDeleted = true;
     }
 
-    public DeliveryManager(User user, String slack_id, DeliveryManagerType type) {
+    public DeliveryManager(UUID hub_id, User user, String slack_id, DeliveryManagerType type) {
+        this.hub_id = hub_id;
         this.user = user;
         this.slack_id = slack_id;
         this.type = type;
     }
-    public static DeliveryManager createDeliveryManager(User user, String slack_id, DeliveryManagerType type) {
-        return new DeliveryManager(user, slack_id, type);
+    public static DeliveryManager createDeliveryManager(UUID hub_id, User user, String slack_id, DeliveryManagerType type) {
+        return new DeliveryManager(hub_id, user, slack_id, type);
     }
     public void update(ManagerRequestDto managerRequestDto) {
         if(managerRequestDto.getSlackId() != null) {
