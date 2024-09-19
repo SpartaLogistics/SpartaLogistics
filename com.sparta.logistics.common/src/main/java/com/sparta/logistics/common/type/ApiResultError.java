@@ -51,7 +51,7 @@ public enum ApiResultError {
     PRODUCT_NO_EXIST("7001", "상품이 존재하지 않습니다."),
     STOCK_NO_EXIST("7100", "수량이 부족합니다."),
 
-
+    MESSAGE_SEND_ERROR("8000", "메시지 발송에 실패했습니다."),
     MESSAGE_NO_EXIST("8001", "메시지가 존재하지 않습니다."),
 
     ERROR_INVALID_LOGIN("9101", "로그인정보가 유효하지 않습니다."),
