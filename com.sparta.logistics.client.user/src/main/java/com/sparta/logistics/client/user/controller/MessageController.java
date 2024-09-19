@@ -13,6 +13,8 @@ import com.sparta.logistics.client.user.service.MessageService;
 import com.sparta.logistics.common.controller.CustomApiController;
 import com.sparta.logistics.common.model.ApiResult;
 import com.sparta.logistics.common.type.ApiResultError;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,10 +27,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/messages")
 @RequiredArgsConstructor
+@Tag(name = "Message 요청 API", description = "Message 요청 내역 관리 목적의 API Docs")
 public class MessageController extends CustomApiController {
     private final MessageService messageService;
     private final UserRepository userRepository;
 
+    @Operation(summary = "Message 생성", description = "Message 생성")
     @PostMapping
     public ApiResult createMessage(@RequestBody @Validated({MessageValid0001.class}) MessageRequestDto request, @RequestHeader("X-User-Name") String username, Errors errors){
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
@@ -46,6 +50,7 @@ public class MessageController extends CustomApiController {
         return apiResult;
     }
 
+    @Operation(summary = "Message 검색", description = "검색어로 메시지 검색")
     @GetMapping("/messages/search")
     public ApiResult searchMessages(
             @RequestBody @Validated({MessageValid0002.class}) SearchRequestDto request,
@@ -67,6 +72,7 @@ public class MessageController extends CustomApiController {
         return apiResult;
     }
 
+    @Operation(summary = "Message 삭제", description = "Message 삭제")
     @DeleteMapping("/{messageId}")
     public ApiResult deleteMessage(@PathVariable UUID messageId){
         ApiResult apiResult = new ApiResult(ApiResultError.ERROR_DEFAULT);
