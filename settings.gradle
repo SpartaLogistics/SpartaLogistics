@@ -1,0 +1,13 @@
+rootProject.name = 'SpartaLogistics'
+
+
+include 'com.sparta.logistics.client.order'
+include 'com.sparta.logistics.client.user'
+include 'com.sparta.logistics.client.ai'
+include 'com.sparta.logistics.client.auth'
+include 'com.sparta.logistics.client.gateway'
+include 'com.sparta.logistics.client.hub'
+include 'com.sparta.logistics.eureka.server'
+include 'com.sparta.logistics.common'
+
+

@@ -1,0 +1,43 @@
+spring:
+  data:
+    redis:
+      host: localhost  # Redis 서버의 호스트명
+      port: 6379       # Redis 서버 포트
+      username: default
+      password: systempass
+  datasource:
+    url: jdbc:postgresql://localhost:5432/users
+    driver-class-name: org.postgresql.Driver
+    username: user_service
+    password: user
+    hikari:
+      maximum-pool-size: 4
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+  application:
+    name: auth-service
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+springdoc:
+  api-docs:
+    version: openapi_3_1
+    enabled: true
+    path: /auth/v3/api-docs
+  enable-spring-security: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+service:
+  jwt:
+    access-expiration: 3600000
+    secret-key: "3d9d5abb6494559eab91a0fd6b0bcd64806d1718de3e06bfcde2f0cfa98673efb893fad45f21ce98e43ced1106b0bca7a6b9f6054e84d54d4613240d8b8f90ae"
+
+server:
+  port: 19092
