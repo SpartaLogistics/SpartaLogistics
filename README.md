@@ -211,7 +211,7 @@ Issues: #11
 <br/>
 # 10. 인프라 설계서
 
-![infra](https://github.com/user-attachments/assets/5150d8a3-a36e-4129-a26f-696002831a6b)
+![infra](https://github.com/user-attachments/assets/d7c6f95a-df3b-4eba-a491-7225110a6cbc)
 
 <br/>
 <br/>
