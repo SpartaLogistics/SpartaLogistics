@@ -27,7 +27,7 @@
 <br/>
 
 # 2. Team Members (팀원 및 팀 소개)
-| 박진우 | 유희진 | 고혁진 |
+| 박진우 (팀장) | 유희진 (팀원) | 고혁진 (팀원)|
 |:------:|:------:|:------:|
 | <img src="https://github.com/user-attachments/assets/c1c2b1e3-656d-4712-98ab-a15e91efa2da" alt="박진우" width="150"> | <img src="https://github.com/user-attachments/assets/78ec4937-81bb-4637-975d-631eb3c4601e" alt="유희진" width="150"> | <img src="https://github.com/user-attachments/assets/78ce1062-80a0-4edb-bf6b-5efac9dd992e" alt="고혁진" width="150"> |
 | BE | BE | BE |
